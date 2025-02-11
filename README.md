@@ -20,7 +20,11 @@ You can find the official running AConline at https://online.armycreator.de
 
 
 AConline is usnf the following libraries:
+
 https://getbootstrap.com/
+
 https://jquery.com/
+
 https://popper.js.org/docs/v2/
+
 https://github.com/shaack/bootstrap-input-spinner
