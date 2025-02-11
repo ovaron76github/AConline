@@ -28,9 +28,9 @@ For developing you need to download the following tools:
 2. AConline enabling package: https://armycreator.de/foren/ACOnlineWebStarter.zip
 3. Actual www folder of the AConline project (from github)
 
-For installation you extract the content of ArmyCreator_latest.zip to one folder. After this you extract the content of ACOnlineWebStarter.zip into the same folder. Now you can replace the content of the www folder with the actual www folder from github.
+For installation you extract the content of ArmyCreator_latest.zip to one folder. After this you extract the content of ACOnlineWebStarter.zip into the same folder. Now you can replace the content of the www folder with the actual www folder from github (just clone this project via git to the ArmyCreator folder).
 
-After those steps you can start the ArmyCreator webserver by starting ACWebStarter.jar and click on "Start AConline server and open page in browser". Now you have a runnin local AConline instance on http://localhost:7070 or http://your-pc-ip:7070
+After those steps you can start the ArmyCreator webserver by starting ACWebStarter.jar and click on "Start AConline server and open page in browser". Now you have a running local AConline instance on http://localhost:7070 or http://your-pc-ip:7070
 
 
 
