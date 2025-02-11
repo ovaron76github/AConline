@@ -33,6 +33,8 @@ For installation you extract the content of ArmyCreator_latest.zip to one folder
 After those steps you can start the ArmyCreator webserver by starting ACWebStarter.jar and click on "Start AConline server and open page in browser". Now you have a running local AConline instance on http://localhost:7070 or http://your-pc-ip:7070
 
 
+If you are looking for a good development tool you can use Visual Studio Code (https://code.visualstudio.com/) and just open the www folder in VSC.
+
 
 # External libraries used by AConline
 AConline is using the following libraries:
