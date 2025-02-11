@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>ArmyCreator Online</title>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+        <link rel="manifest" href="./site.webmanifest">
+        <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+
+        <meta http-equiv="cache-control" content="max-age=0">
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="expires" content="-1">
+        <meta http-equiv="expires" content="Tue, 01 Jan 1980 11:00:00 GMT">
+        <meta http-equiv="pragma" content="no-cache">
+        
+        <link rel="stylesheet" href="./css/bootstrap.min.css">
+        <link rel="stylesheet" href="./pictures/icons/bootstrap-icons.css">
+        <link rel="stylesheet" href="./css/acweb.css">
+        <script src="./js/jquery-3.6.0.min.js"></script>
+        <script src="./js/bootstrap.min.js"></script>
+        <script src="./js/acarmylist.js"></script>
+        <script src="./js/acselection.js"></script>
+        <link href="./css/bootstrap-toggle.min.css" rel="stylesheet">
+        <script src="./js/bootstrap-toggle.min.js"></script>
+    </head>
+
+    <body class="myBodyColor">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top header bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#top"><img src="pictures/ArmyCreator.png" style="width: 60px;"></a>
+                <ul class="navbar-left h2 text-white">
+                    ArmyCreator online
+                </ul>
+            </div>
+        </nav>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <div class="container-fluid">
+            <div class="w-auto text-start">
+                <div class="card myHeaderColor shadow rounded">
+                    <div class="card-header myActionButtonBackground" >
+                        <b>Game systems</b>
+                        <i style="float:right;">
+                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="localStorage.clear();location.reload();" title="Remove cache"><i class="bi bi-trash"></i> Cache</button>
+                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="minimize();" title="Minimize game systems"><i class="bi bi-dash"></i> Hide</button>
+                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="maximize();" title="Maximize game systems"><i class="bi bi-app"></i> Show</button>
+                            <input type="checkbox" checked data-size="mini" data-toggle="toggle" data-on="Light" data-off="Dark" data-onstyle="light" data-offstyle="dark" id="darkLightToggle">
+                        </i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text" id="selection">
+                            <u>If you see this message:</u><br>
+                            <b>ArmyCreator online</b> is not working with older browsers like Internet Explorer.<br>
+                            Please use a modern Webbrowser (like Firefox, Chrome, Edge, Safari, etc.)!<br>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="container text-center">
+            <div class="row">
+                <div class="col">
+                    <form action="https://www.paypal.com/donate" method="post" target="_top">
+                        <p id="donate" class="rounded shadow myDonateColor" style="border: 1px solid orange; color: gray; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;">The ArmyCreator project is designed to be (and will remain) free for the users. It is a project to make all of our hobby more convenient. Nevertheless, the servers and bandwidth cost money per year. If you like you can donate a small amount. This donation is not a requirement for the project to continue, it is just a way to help the project a little. If you want to donate please use the following link:
+                            <input type="hidden" name="hosted_button_id" value="H38ZLSGFL3LXY" />
+                            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                            <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+                        </p>
+                    </form>	
+                </div>
+            </div>
+        </div>	
+
+        <br>
+
+        <div class="container text-center">
+            <div class="row">
+                <div class="col">
+                    <a href="https://www.armycreator.de">ArmyCreator</a>&nbsp;&nbsp;
+                    <a href="https://cloud.armycreator.de">CreatorCloud</a>&nbsp;&nbsp;
+                    <a href="./impressum.html">Impressum/Imprint</a>&nbsp;&nbsp;
+                    <br>
+                    <p><font color="orange">&#169; 2016-2024 by Stefan Dietzel</font></p>
+                    <br>
+                </div>
+            </div>
+        </div>	
+
+        <script>
+            $(function () {
+                $('#darkLightToggle').change(function () {
+                    toggleDisplayMode();
+                })
+            })
+        </script>
+
+    </body>
+
+</html>
