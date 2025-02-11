@@ -12,3 +12,8 @@ After you finished your roster you can easily print it out or upload it to the C
 Generated HTML roster are interactive and you can get all information you need for your gameplay at a fingertip. Rosters can be exported to HTML, text and BBcode.
 
 This is the repository for the mobile/online ArmyCreator (AConline).
+
+AConline needs a running ArmyCreator server in background which provides all data, calulations etc.
+You can say that AConline is only an online  user interface for ArmyCreator.
+
+You can find the official running AConline at https://online.armycreator.de
