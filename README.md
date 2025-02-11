@@ -21,18 +21,13 @@ You can find the official running AConline at https://online.armycreator.de
 
 
 # How to prepare development
-For developing you need to download the following tools:
+For developing you need todo the following steps:
 
-1. ArmyCreator: https://armycreator.de/foren/ArmyCreator_latest.zip
-2. AConline enabling package: https://armycreator.de/foren/ACOnlineWebStarter.zip
-3. Actual www folder of the AConline project (from github)
-
-For installation you extract the content of ArmyCreator_latest.zip to one folder. After this you extract the content of ACOnlineWebStarter.zip into the same folder and empty www folder. Now you can replace the content of the www folder with the actual www folder from github (just clone this project via git to the ArmyCreator folder).
-
-After those steps you can start the ArmyCreator webserver by starting ACWebStarter.jar and click on "Start AConline server and open page in browser". Now you have a running local AConline instance on http://localhost:7070 or http://your-pc-ip:7070
-
-
-If you are looking for a good development tool you can use Visual Studio Code (https://code.visualstudio.com/) and just open the www folder in VSC.
+1. Install Java 8+ (https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)
+1. Clone this repository to your system
+2. Start ArmyCreator webserver by starting ACWebStarter.jar and click on "Start AConline server and open page in browser".
+3. Now you have a running local AConline instance on http://localhost:7070 or http://your-pc-ip:7070
+4. If you are looking for a good development tool you can use Visual Studio Code (https://code.visualstudio.com/) and just open the www folder in VSC.
 
 
 # External libraries used by AConline
