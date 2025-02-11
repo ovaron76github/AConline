@@ -19,7 +19,7 @@ You can say that AConline is only an online user interface for ArmyCreator.<br>
 You can find the official running AConline at https://online.armycreator.de<br>
 <br>
 <br>
-<u></u><b>How to prepare development</b></u><br>
+<u><<b>How to prepare development</b></u><br>
 For developing you need to do the following steps:<br>
 <br>
 1. Install Java 8+ (https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)<br>
@@ -29,7 +29,7 @@ For developing you need to do the following steps:<br>
 4. If you are looking for a good development tool you can use Visual Studio Code (https://code.visualstudio.com/) and just open the www folder in VSC.<br>
 <br>
 <br>
-<b><u></u>External libraries used by AConline</b>u></b><br>
+<u><b></u>External libraries used by AConline</b></u><br>
 AConline is using the following libraries:<br>
 https://getbootstrap.com/<br>
 https://jquery.com/<br>
