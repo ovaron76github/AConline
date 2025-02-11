@@ -20,7 +20,13 @@ You can say that AConline is only an online user interface for ArmyCreator.
 
 You can find the official running AConline at https://online.armycreator.de
 
+For developing you need to download the following tools:
 
+1. ArmyCreator: https://armycreator.de/foren/ArmyCreator_latest.zip
+2. AConline enabling package: https://armycreator.de/foren/ACOnlineWebStarter.zip
+3. actual www folder of the AConline project (from github)
+
+For installation you extract the content of ArmyCreator_latest.zip to one folder. After this you extract the content of ACOnlineWebStarter.zip into the same folder. Now you can replace the content of the www folder with the actual www folder from github.
 
 
 
