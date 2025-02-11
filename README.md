@@ -19,23 +19,19 @@ You can say that AConline is only an online user interface for ArmyCreator.<br>
 You can find the official running AConline at https://online.armycreator.de<br>
 <br>
 <br>
-# How to prepare development
-For developing you need todo the following steps:
-
-1. Install Java 8+ (https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)
-1. Clone this repository to your system
-2. Start ArmyCreator webserver by starting ACWebStarter.jar and click on "Start AConline server and open page in browser".
-3. Now you have a running local AConline instance on http://localhost:7070 or http://your-pc-ip:7070
-4. If you are looking for a good development tool you can use Visual Studio Code (https://code.visualstudio.com/) and just open the www folder in VSC.
-
-
-# External libraries used by AConline
-AConline is using the following libraries:
-
-https://getbootstrap.com/
-
-https://jquery.com/
-
-https://popper.js.org/docs/v2/
-
-https://github.com/shaack/bootstrap-input-spinner
+<b>How to prepare development</b><br>
+For developing you need todo the following steps:<br>
+<br>
+1. Install Java 8+ (https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)<br>
+1. Clone this repository to your system<br>
+2. Start ArmyCreator webserver by starting ACWebStarter.jar and click on "Start AConline server and open page in browser".<br>
+3. Now you have a running local AConline instance on http://localhost:7070 or http://your-pc-ip:7070<br>
+4. If you are looking for a good development tool you can use Visual Studio Code (https://code.visualstudio.com/) and just open the www folder in VSC.<br>
+<br>
+<br>
+<b>External libraries used by AConline</b><br>
+AConline is using the following libraries:<br>
+https://getbootstrap.com/<br>
+https://jquery.com/<br>
+https://popper.js.org/docs/v2/<br>
+https://github.com/shaack/bootstrap-input-spinner<br>
