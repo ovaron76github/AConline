@@ -1,5 +1,4 @@
-# AConline
-ArmyCreator online
+# AConline online
 
 
 Welcome to the army creator world for tabletop army lists. 
