@@ -1,8 +1,6 @@
 # AConline online
-
-
-Welcome to the ArmyCeator world for tabletop army lists (https://www.armycreator.de).
-
+<br>
+Welcome to the ArmyCeator world for tabletop army lists (https://www.armycreator.de).<br>
 The ArmyCreator is a complete toolkit for army list generation and administration. 
 
 It consists of the actual Click & Play army list generator ArmyCreator, AConline (online ArmyCreator), the DataCreator a tool for creating data files for almost any tabletop game and the CreatorCloud for convenient online management of army lists. 
