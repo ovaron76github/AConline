@@ -34,7 +34,7 @@ After those steps you can start the ArmyCreator webserver by starting ACWebStart
 
 
 
-#External libraries used by AConline
+# External libraries used by AConline
 AConline is using the following libraries:
 
 https://getbootstrap.com/
