@@ -1,0 +1,102 @@
+#file-input {
+    display: none;
+}
+
+.card-hover:hover{
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
+
+.text-hover:hover{
+  background: #e7e7e7;
+}
+
+.text-bold-hover:hover{
+  font-weight: bold;
+}
+
+.popover-body {
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.myDivColor {
+    background-color: #ffffff;
+}
+
+.myBodyColor {
+    background-color: #ebeced;
+}
+
+.myDonateColor {
+    background-color: #f7f7f7;
+}
+
+.myHeaderColor {
+    background-color: #ebeced;
+    color: black;
+}
+
+.popover-header{
+    background-color: #e8692d;
+}
+
+.popover-body {
+    background-color: #f4b477;
+}
+
+.myOddLine {
+    background-color: #ffffff;
+}
+
+.fixScrolling {
+    scroll-margin-top: 70px;
+}
+
+.myBodyFix {
+    min-height: 80rem; 
+    padding-top: 4.5rem;
+}
+
+.myHeaderBackground {
+    background-color:#f4b477;
+}
+
+.myCategoryBackground {
+    background-color:#e8692d;
+}
+
+.myActionButtonBackground {
+    background-color:#f4b477;
+    color:black;
+}
+
+.myBorder {
+    border-width: 1px;
+    border-color: #f4b477;
+    border-style: solid;
+}
+
+.myBorderSelection {
+    border-width: 1px;
+    border-color: #f4b477;
+    border-style: solid;
+}
+
+#loading {
+    display: flex;
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(192, 192, 192, 0.5);
+    background-image: url("/pictures/wait.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+/*
+body {
+    margin-bottom: 100px;
+}
+*/
