@@ -31,7 +31,7 @@
         <script src="./js/acweb.js"></script>
     </head>
 
-    <body class="myBodyColor fixScrolling myBodyFix d-flex flex-column h-100" id="top">
+    <body class="myBodyColor fixScrolling myBodyFix d-flex flex-column h-100 border border-warning rounded" id="top">
         <style type="text/css">
             .popover{
                 max-width:600px;
@@ -81,26 +81,29 @@
         </header>
 
         <main class="flex-shrink-0">
-            <!--Army Name-->
-            <div class="container-fluid">
-                <div class="text-start">
-                    <div style="float: left;" id="armyIcon"></div>
-                    <div id="armyinfo" style="font-weight: bold;font-style: italic; color:#e8692d;">ArmyName</div>
+
+            <div class="container-fluid mb-3">
+                <div class="row">
+                    <!--Army Name-->
+                    <div class="col-sm float-start mt-1">
+                        <div class="text-start">
+                            <div class="" style="float: left;" id="armyIcon"></div>
+                            <div id="armyinfo" style="font-weight: bold;font-style: italic; color:#e8692d;">ArmyName</div>
+                        </div>
+                    </div>
+            
+                    <!--Cost limit-->
+                    <div class="col-sm float-end mt-1">
+                        <div class="input-group rounded shadow float-end">
+                            <span class="input-group-text myHeaderBackground">Cost limit</span>
+                            <input class="form-control input-sm" type="text" id="maxArmyPoints" name="num" min="0" max="9999999" value="0" inputmode="decimal" />
+                            <span class="input-group-text myHeaderBackground">points</span>
+                        </div>
+                        <p class="text-end"><em><font size="-1">0 = unlimited</font></em></p>
+                    </div>
                 </div>
             </div>
-
-            <br>
-            <!--Cost limit-->
-            <div class="container float-end" style="max-width: 500px">
-                <div class="input-group rounded shadow">
-                    <span class="input-group-text myHeaderBackground">Cost limit</span>
-                    <input class="form-control input-sm" type="text" id="maxArmyPoints" name="num" min="0" max="9999999" value="0" inputmode="decimal"/>
-                    <span class="input-group-text myHeaderBackground">points</span>
-                </div>
-                <p class="text-end"><em><font size="-1">0 = unlimited</font></em></p>
-            </div>
-
-            <br><br><br><br>
+            
             <!--Category List-->
             <div class="container-fluid">
                 <div class="card card-text myBodyColor fixScrolling shadow" id="categoryList">
