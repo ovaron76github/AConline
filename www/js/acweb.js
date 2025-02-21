@@ -426,9 +426,14 @@ function loadSession() {
     }
 
     if (localStorage.rosters) {
-        loadRST(localStorage.rosters);
-        createRosterTable();
-        checkRooster();
+        if (localStorage.rostername == armyname) {
+            loadRST(localStorage.rosters);
+            createRosterTable();
+            checkRooster();
+        } else {
+            document.getElementById("rosterName").value = armyname;
+            createRosterTable();
+        }
     } else {
         rosters = new Roster();
         createRosterTable();
