@@ -16,6 +16,13 @@ let categoryUnitMap = null;
 let unitOptions = null;
 let availableOptionsMap = null;
 let displayMode = "light";
+let descriptionRequests = new Map();
+let descriptionPopoverTriggers = new WeakSet();
+let categoryRequests = new Map();
+let categoryUnitRequestVersion = 0;
+let unitOptionsRequestVersion = 0;
+let unitCostRequestVersion = 0;
+let unitCostDebounceTimer = null;
 
 function getServer(urlpart) {
     var result = server + encodeURI(urlpart);
@@ -35,6 +42,20 @@ var getQueryParam = function (param) {
 $(document).ready(function () {
     bootstrap.Popover.Default.html = true;
     bootstrap.Popover.Default.sanitize = false;
+    bootstrap.Popover.Default.placement = "auto";
+    bootstrap.Popover.Default.boundary = "viewport";
+    bootstrap.Popover.Default.popperConfig = function (config) {
+        return Object.assign({}, config, {
+            modifiers: config.modifiers.map(function (modifier) {
+                if (modifier.name == "preventOverflow") {
+                    return Object.assign({}, modifier, {
+                        options: Object.assign({}, modifier.options, { altAxis: true, padding: 8 })
+                    });
+                }
+                return modifier;
+            })
+        });
+    };
 
     var urlArmy = getQueryParam("army");
     if ((typeof (urlArmy) != "undefined") && (urlArmy != null)) {
@@ -59,6 +80,7 @@ function setElementVisible(elementOrSelector, visible) {
 }
 
 function init() {
+    setElementVisible('#loading', true);
     actualUnit = new Unit();
     unitCategory = new Map();
     optiondescriptions = new Map();
@@ -67,10 +89,10 @@ function init() {
     unitOptions = new Map();
     availableOptionsMap = new Map();
     unitCostMap = new Map();
+    descriptionRequests = new Map();
+    categoryRequests = new Map();
     getSetArmyName();
     getArmyIcon();
-    getAllDescriptionForAllOptions();
-    getDescriptionsForAllUnits();
 
     document.getElementById("maxArmyPoints").addEventListener("focusout", (event) => {
         checkRooster();
@@ -79,6 +101,7 @@ function init() {
 }
 
 function enableDarkMode() {
+    document.body.classList.add("dark-mode");
     changeCSSBackground(".myDivColor", "black");
     changeCSSForeground(".myDivColor", "white");
     changeCSSBackground(".myBodyColor", "#212121");
@@ -99,6 +122,7 @@ function enableDarkMode() {
 }
 
 function enableLightMode() {
+    document.body.classList.remove("dark-mode");
     changeCSSBackground(".myDivColor", "white");
     changeCSSForeground(".myDivColor", "black");
     changeCSSBackground(".myBodyColor", "#ebeced");
@@ -214,25 +238,9 @@ class Unit {
     }
 
     isEmpty() {
-        var result = true;
-        if (!this.category.trim.isEmpty)
-            result = false;
-        if (!this.name.trim.isEmpty)
-            result = false;
-        if (!this.size.trim.isEmpty)
-            result = false;
-        if (!this.options.trim.isEmpty)
-            result = false;
-        if (!this.cost.trim.isEmpty)
-            result = false;
-        if (!this.uuid.trim.isEmpty)
-            result = false;
-        if (!this.refuuid.trim.isEmpty)
-            result = false;
-        if (!this.comment.trim.isEmpty)
-            result = false;
-
-        return result;
+        return [this.category, this.name, this.size, this.options, this.cost,
+            this.uuid, this.refuuid, this.comment]
+                .every(value => value == null || String(value).trim() === "");
     }
 
 }
@@ -454,7 +462,7 @@ function loadSession() {
 
 function createRST() {
     var rst = "###" + armyname + "###\n";
-    let formatedMaxArmyPoints = document.getElementById("maxArmyPoints").value.replaceAll(",", ".").replaceAll("[^0-9.,]", "").trim();
+    let formatedMaxArmyPoints = document.getElementById("maxArmyPoints").value.replaceAll(",", ".").replace(/[^0-9.]/g, "").trim();
 
     rst += "$$$" + formatedMaxArmyPoints + "$$$\n";
     if (rosters != null && rosters.units.length > 0) {
@@ -597,20 +605,18 @@ function formatUnit(unitname) {
 }
 
 function createCategories(categories, selectedCategory) {
-    let result = "<div class=\"myCategoryBackground btn-group w-100 flex-wrap rounded-bottom \" role=\"group\" data-toggle=\"buttons\">";
+    let result = "<div class=\"myCategoryBackground army-category-tabs\" role=\"group\" aria-label=\"Unit categories\">";
     for (var i = 0; i < categories.length; i++) {
-        var categoryName = categories[i];
-        if (categoryName == selectedCategory) {
-            categoryName = "<u><b>" + categoryName + "</b></u>";
-        }
-        result += "<button type=\"button\" onclick=\"showUnits('" + categories[i] + "');\" class=\"myCategoryBackground btn card-hover rounded-bottom fs-5\" style=\"color:white; border-radius:0;\" >" + categoryName + "</button>";
+        var isActive = categories[i] == selectedCategory;
+        var categoryName = isActive ? "<b>" + categories[i] + "</b>" : categories[i];
+        result += "<button type=\"button\" onclick=\"showUnits('" + categories[i] + "');\" class=\"myCategoryBackground btn army-category-tab" + (isActive ? " is-active" : "") + "\" aria-pressed=\"" + isActive + "\">" + categoryName + "</button>";
     }
     result += "</div>";
     document.getElementById("categories").innerHTML = result;
 }
 
 function createUnits(units, selectedUnit) {
-    let result = "<div class=\"btn-group-vertical w-100 p-2\">";
+    let result = "<div class=\"btn-group-vertical w-100 p-2\"><ul>";
 
     var unitCount = units.length;
     if (unitCount>9) {
@@ -652,8 +658,16 @@ function showOptions(name) {
 
 function initPopover() {
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl);
+    popoverTriggerList.forEach(function (popoverTriggerEl) {
+        if (!bootstrap.Popover.getInstance(popoverTriggerEl)) {
+            new bootstrap.Popover(popoverTriggerEl);
+        }
+        if (!descriptionPopoverTriggers.has(popoverTriggerEl)) {
+            popoverTriggerEl.addEventListener('show.bs.popover', function () {
+                loadPopoverDescription(popoverTriggerEl);
+            });
+            descriptionPopoverTriggers.add(popoverTriggerEl);
+        }
     });
 }
 
@@ -661,7 +675,7 @@ function createOption(type, options) {
     let result = "<div><label class=\"badge\" style=\"background-color:#f4b477;\">" + type + "</label>";
 
     for (var i = 0; i < options.length; i++) {
-        var popover = '<a tabindex="0" class="bi text-scale-hover bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" title="' + removeCosts(options[i]) + '" data-bs-content="Loading..." id="desc_' + options[i] + '"></a>';
+        var popover = '<a tabindex="0" class="bi text-scale-hover bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" data-description-type="option" data-description-name="' + options[i] + '" title="' + removeCosts(options[i]) + '" data-bs-content="Loading..." id="desc_' + options[i] + '"></a>';
         result += "<div class=\"form-check text-hover myDivColor\"><input class=\"form-check-input\" type=\"checkbox\" value=\"\" onclick=\"doLiveCheck('" + options[i] + "');\" id=\"option_" + options[i] + "\"><label class=\"form-check-label btn-sm\" for=\"option_" + options[i] + "\" id=\"label_" + options[i] + "\">" + options[i] + "</label>" + popover + "</div>";
     }
     result += "</div>";
@@ -670,7 +684,7 @@ function createOption(type, options) {
 }
 
 function createUnitHeader(unitName, prefix) {
-    var result = '<a tabindex="0" class="bi bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" title="' + removeCosts(unitName) + '" data-bs-content="Loading..." id="' + prefix + unitName + '"></a>';
+    var result = '<a tabindex="0" class="bi bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" data-description-type="unit" data-description-name="' + unitName + '" title="' + removeCosts(unitName) + '" data-bs-content="Loading..." id="' + prefix + unitName + '"></a>';
 
     return result;
 }
@@ -764,31 +778,6 @@ function getArmyIcon() {
     }
 }
 
-function getDescriptionForOption(optionname, prefix) {
-    var optname = removeStackFromText(removeCostsFromText(optionname));
-    if (optiondescriptions.has(optname)) {
-        var result = optiondescriptions.get(optname);
-        try {
-            document.getElementById(prefix + optionname).setAttribute("data-bs-content", result);
-        } catch (err) {
-        }
-    } else {
-        let url = getServer("/optiondescription/" + armydatafile + "/" + btoa(optname));
-        let request = new XMLHttpRequest();
-        request.open('GET', url);
-        request.responseType = 'text';
-        request.onload = function () {
-            var result = request.response.replaceAll("- ", "<br />- ");
-            optiondescriptions.set(optname, result);
-            try {
-                document.getElementById(prefix + optionname).setAttribute("data-bs-content", result);
-            } catch (err) {
-            }
-        };
-        request.send();
-    }
-}
-
 function removeCostsFromText(txt) {
     return txt.split('@')[0].trim();
 }
@@ -796,95 +785,140 @@ function removeStackFromText(txt) {
     return txt.split('#')[0].trim();
 }
 
-function getAllDescriptionForAllOptions() {
-    let url = getServer("/alloptiondescriptions/" + armydatafile);
-    let request = new XMLHttpRequest();
-    request.open('GET', url);
-    request.responseType = 'text';
-    request.onload = function () {
-        var result = request.response;
-        var itemlines = result.split('\n');
-        for (let i = 0; i < itemlines.length; i++) {
-            var item = itemlines[i].split('###');
-            var name = removeStackFromText(item[0]);
-            if (!optiondescriptions.has(name) && item[0].length > 0 && item[1] !== undefined) {
-                optiondescriptions.set(name, item[1].replaceAll("- ", "<br />- "));
-            }
-        }
-
-    };
-    request.send();
-}
-
-function getDescriptionsForAllUnits() {
-    let url = getServer("/allunitsdescriptions/" + armydatafile);
-    let request = new XMLHttpRequest();
-    request.open('GET', url);
-    request.responseType = 'text';
-    request.onload = function () {
-        var result = request.response;
-        var itemlines = result.split('\n');
-        for (let i = 0; i < itemlines.length; i++) {
-            var item = itemlines[i].split('###');
-            var name = item[0];
-            if (!optiondescriptions.has(name) && item[0].length > 0 && item[1] !== undefined) {
-                optiondescriptions.set(name, item[1].replaceAll("- ", "<br />- "));
-            }
-        }
-    };
-    request.send();
-}
-
-function getDescriptionForUnit(unitname, prefix) {
-    if (optiondescriptions.has(unitname)) {
-        var result = optiondescriptions.get(unitname);
-        try {
-            document.getElementById(prefix + unitname).setAttribute("data-bs-content", result);
-        } catch (err) {
-        }
-    } else {
-        let url = getServer("/unitdescription/" + armydatafile + "/" + unitname);
-        let request = new XMLHttpRequest();
-        request.open('GET', url);
-        request.responseType = 'text';
-        request.onload = function () {
-            var result = request.response.replaceAll("- ", "<br />- ");
-            optiondescriptions.set(unitname, result);
-            try {
-                document.getElementById(prefix + unitname).setAttribute("data-bs-content", result);
-            } catch (err) {
-            }
-        };
-        request.send();
+function loadPopoverDescription(trigger) {
+    var type = trigger.getAttribute("data-description-type");
+    var rawName = trigger.getAttribute("data-description-name");
+    if (!type || rawName == null) {
+        return;
     }
+    var name = type == "option" ? removeStackFromText(removeCostsFromText(rawName)) : rawName.trim();
+    var updateContent = function (content) {
+        trigger.setAttribute("data-bs-content", content);
+        var popoverId = trigger.getAttribute("aria-describedby");
+        var popover = popoverId ? document.getElementById(popoverId) : null;
+        var body = popover ? popover.querySelector(".popover-body") : null;
+        if (body) {
+            body.innerHTML = content;
+            requestAnimationFrame(function () {
+                var instance = bootstrap.Popover.getInstance(trigger);
+                if (instance) {
+                    instance.update();
+                }
+            });
+        }
+    };
+
+    if (optiondescriptions.has(name)) {
+        updateContent(optiondescriptions.get(name));
+        return;
+    }
+
+    var requestKey = type + ":" + name;
+    if (descriptionRequests.has(requestKey)) {
+        descriptionRequests.get(requestKey).add(trigger);
+        return;
+    }
+
+    var triggers = new Set([trigger]);
+    descriptionRequests.set(requestKey, triggers);
+    var endpoint = type == "option"
+        ? "/optiondescription/" + armydatafile + "/" + btoa(name)
+        : "/unitdescription/" + armydatafile + "/" + name;
+    var request = new XMLHttpRequest();
+    request.open('GET', getServer(endpoint));
+    request.responseType = 'text';
+    request.onload = function () {
+        descriptionRequests.delete(requestKey);
+        var content = request.status >= 200 && request.status < 300
+            ? request.response.replaceAll("- ", "<br />- ")
+            : "Description unavailable.";
+        if (request.status >= 200 && request.status < 300) {
+            optiondescriptions.set(name, content);
+        }
+        triggers.forEach(function (element) {
+            element.setAttribute("data-bs-content", content);
+            var popoverId = element.getAttribute("aria-describedby");
+            var popover = popoverId ? document.getElementById(popoverId) : null;
+            var body = popover ? popover.querySelector(".popover-body") : null;
+            if (body) {
+                body.innerHTML = content;
+                requestAnimationFrame(function () {
+                    var instance = bootstrap.Popover.getInstance(element);
+                    if (instance) {
+                        instance.update();
+                    }
+                });
+            }
+        });
+    };
+    request.onerror = function () {
+        descriptionRequests.delete(requestKey);
+        triggers.forEach(function (element) {
+            element.setAttribute("data-bs-content", "Description unavailable.");
+            var popoverId = element.getAttribute("aria-describedby");
+            var popover = popoverId ? document.getElementById(popoverId) : null;
+            var body = popover ? popover.querySelector(".popover-body") : null;
+            if (body) {
+                body.textContent = "Description unavailable.";
+            }
+        });
+    };
+    request.timeout = 10000;
+    request.ontimeout = request.onerror;
+    request.send();
 }
 
 function createUnitCategoryMap() {
     unitCategory = new Map();
-
-    for (var c = 0; c < categories.length; c++) {
-        let category = categories[c];
-        let urlUnits = getServer("/unitlist/" + armydatafile + "/" + category);
-        let requestUnits = new XMLHttpRequest();
-        requestUnits.open('GET', urlUnits);
-        requestUnits.responseType = 'text';
-        requestUnits.onload = function () {
-            var lines = requestUnits.response.split("\n");
-            for (l = 0; l < lines.length; l++) {
-                var n = lines[l].indexOf(";");
-                var unitName = lines[l].substr(0, n);
-                if (unitName.trim() != "") {
-                    unitCategory.delete(unitName);
-                    unitCategory.set(unitName, category);
-                }
-
-            }
-        }
-        requestUnits.send();
-    }
+    categories.forEach(function (category) {
+        getCategoryUnitData(category).catch(function () {});
+    });
 }
 
-function getUnitCosts() {
+function getCategoryUnitData(category) {
+    if (categoryUnitMap.has(category)) {
+        return Promise.resolve(categoryUnitMap.get(category));
+    }
+    if (categoryRequests.has(category)) {
+        return categoryRequests.get(category);
+    }
+
+    var request = new XMLHttpRequest();
+    request.open('GET', getServer("/unitlist/" + armydatafile + "/" + category));
+    request.responseType = 'text';
+    var categoryRequest = new Promise(function (resolve, reject) {
+        request.onload = function () {
+            if (request.status < 200 || request.status >= 300) {
+                categoryRequests.delete(category);
+                reject(new Error("Unable to load category units."));
+                return;
+            }
+            var parsedUnits = request.response.split(";");
+            categoryUnitMap.set(category, parsedUnits);
+            var lines = request.response.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                var separator = lines[i].indexOf(";");
+                var unitName = lines[i].substring(0, separator).trim();
+                if (unitName != "") {
+                    unitCategory.set(unitName, category);
+                }
+            }
+            resolve(parsedUnits);
+        };
+        request.onerror = function () {
+            categoryRequests.delete(category);
+            reject(new Error("Unable to load category units."));
+        };
+        request.timeout = 10000;
+        request.ontimeout = request.onerror;
+    });
+    categoryRequests.set(category, categoryRequest);
+    request.send();
+    return categoryRequest;
+}
+
+function getUnitCosts(immediate) {
+    var requestVersion = ++unitCostRequestVersion;
     let urlUnitCosts = getServer("/unitcost/");
     actualUnit.size = document.getElementById("unitsize").value;
 
@@ -907,14 +941,26 @@ function getUnitCosts() {
     }
 
     if (unitCostMap.has(searchHash)) {
+        clearTimeout(unitCostDebounceTimer);
         actualUnit.cost = unitCostMap.get(searchHash);
         document.getElementById("unitcost").innerHTML = "Cost: <b>" + actualUnit.cost + "</b>";
     } else {
-        $.post(urlUnitCosts, data, function (result) {
-            unitCostMap.set(searchHash, result);
-            actualUnit.cost = result;
-            document.getElementById("unitcost").innerHTML = "Cost: <b>" + result + "</b>";
-        });
+        var calculateCost = function () {
+            $.post(urlUnitCosts, data, function (result) {
+                unitCostMap.set(searchHash, result);
+                if (requestVersion != unitCostRequestVersion) {
+                    return;
+                }
+                actualUnit.cost = result;
+                document.getElementById("unitcost").innerHTML = "Cost: <b>" + result + "</b>";
+            });
+        };
+        clearTimeout(unitCostDebounceTimer);
+        if (immediate) {
+            calculateCost();
+        } else {
+            unitCostDebounceTimer = setTimeout(calculateCost, 120);
+        }
     }
 }
 
@@ -1046,14 +1092,14 @@ function checkRooster() {
 
     document.getElementById('rostercheck').innerHTML = "";
     $.post(urlCheckRoster, dataRosterCheck, function (result) {
-        var errors = result.replaceAll("<html>", "").replaceAll("</html>", "".replaceAll("\n", "<br>")).trim();
+        var errors = result.replaceAll("<html>", "").replaceAll("</html>", "").replace(/\r?\n/g, "<br>").trim();
         if (errors != "") {
             errors = "<b>Errors</b>:<br>" + errors;
         }
 
         if (errors == "" || rosters.units.length == 0)
             errors = "No errors found.";
-        document.getElementById('rostercheck').innerHTML = errors.replace("\n", "<br>");
+        document.getElementById('rostercheck').innerHTML = errors;
         getStatistics();
 
         var marginAdd = document.getElementById("footer").clientHeight;
@@ -1290,7 +1336,7 @@ function deselectAllOptions() {
     }
 
     destroyToast();
-    getUnitCosts();
+    getUnitCosts(true);
     setOptionsToAvailableState();
 }
 
@@ -1324,21 +1370,16 @@ function createCategoryUnits(parseUnits, selectedUnit) {
 }
 
 function getCategoryUnits(category, selectedUnit) {
-    let urlUnits = getServer("/unitlist/" + armydatafile + "/" + category);
-    let requestUnits = new XMLHttpRequest();
-    requestUnits.open('GET', urlUnits);
-    requestUnits.responseType = 'text';
-    requestUnits.onload = function () {
-        var parseUnits = requestUnits.response.split(";");
-        categoryUnitMap.set(category, parseUnits);
-        createCategoryUnits(parseUnits, selectedUnit)
-    }
-    if (categoryUnitMap.has(category)) {
-        var parseUnits = categoryUnitMap.get(category);
-        createCategoryUnits(parseUnits, selectedUnit);
-    } else {
-        requestUnits.send();
-    }
+    var requestVersion = ++categoryUnitRequestVersion;
+    getCategoryUnitData(category).then(function (parseUnits) {
+        if (requestVersion == categoryUnitRequestVersion) {
+            createCategoryUnits(parseUnits, selectedUnit);
+        }
+    }).catch(function () {
+        if (requestVersion == categoryUnitRequestVersion) {
+            document.getElementById("categoryUnits").textContent = "Unable to load units. Please try again.";
+        }
+    });
 }
 
 function getSetArmyName() {
@@ -1378,7 +1419,6 @@ function parseUnitOptions(unitname, parseOptions) {
     var options = new Array();
     var checked = new Array();
     var trimUnitName = unitname.trim();
-    var allOptions = new Array();
     var actType = "";
     var oldType = "";
     var min = mapMinSize.get(trimUnitName);
@@ -1416,7 +1456,6 @@ function parseUnitOptions(unitname, parseOptions) {
             if (parseOptions[i + 3] == "true") {
                 checked.push(unitString);
             }
-            allOptions.push(unitString);
             oldType = actType;
         }
     }
@@ -1453,17 +1492,25 @@ function parseUnitOptions(unitname, parseOptions) {
     }
     $("input[type='number']").inputSpinner();
 
-    getUnitCosts();
+    getUnitCosts(true);
     setOptionsToAvailableState();
-    getDescriptionForUnit(unitname.trim(), "desc_");
-    for (var o = 0; o < allOptions.length; o++) {
-        getDescriptionForOption(allOptions[o], "desc_");
-    }
     initPopover();
     setElementVisible('#loading', false);
 }
 
 function getUnitOptions(unitname) {
+    var requestVersion = ++unitOptionsRequestVersion;
+    var showLoadError = function () {
+        if (requestVersion == unitOptionsRequestVersion) {
+            document.getElementById("unitOptions").textContent = "Unable to load options. Please try again.";
+            setElementVisible('#loading', false);
+        }
+    };
+    var displayOptions = function (parseOptions) {
+        if (requestVersion == unitOptionsRequestVersion) {
+            parseUnitOptions(unitname, parseOptions);
+        }
+    };
     hideAllPopover();
     setElementVisible('#loading', true);
     let categoryOfUnit = unitCategory.get(unitname);
@@ -1473,14 +1520,23 @@ function getUnitOptions(unitname) {
     requestOptions.open('GET', urlOptions);
     requestOptions.responseType = 'text';
     requestOptions.onload = function () {
+        if (requestOptions.status < 200 || requestOptions.status >= 300) {
+            showLoadError();
+            return;
+        }
         var parseOptions = requestOptions.response.split(";");
         unitOptions.set(unitname, parseOptions);
-        parseUnitOptions(unitname, parseOptions);
+        displayOptions(parseOptions);
     }
     if (unitOptions.has(unitname)) {
         var parseOptions = unitOptions.get(unitname);
-        parseUnitOptions(unitname, parseOptions);
+        displayOptions(parseOptions);
     } else {
+        requestOptions.onerror = function () {
+            showLoadError();
+        };
+        requestOptions.timeout = 10000;
+        requestOptions.ontimeout = requestOptions.onerror;
         requestOptions.send();
     }
 
@@ -1490,7 +1546,7 @@ function getUnitOptions(unitname) {
 function addActualUnitToRoster(status) {
     actualUnit.options = getSelectedOptions();
     actualUnit.size = document.getElementById("unitsize").value;
-    getUnitCosts();
+    getUnitCosts(true);
     if (status == "replace") {
         rosters.replaceUnit(actualUnit.uuid, actualUnit);
     } else {
@@ -1519,7 +1575,7 @@ function createRosterTable() {
         var printOptions = "";
         for (var l = 0; l < options.length; l++) {
             if (options[l].trim() != "") {
-                var popover = '<a tabindex="0" class="bi bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" title="' + options[l] + '" data-bs-content="Loading..." id="' + rosters.units[i].uuid + '_' + options[l] + '"></a>';
+                var popover = '<a tabindex="0" class="bi bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" data-description-type="option" data-description-name="' + options[l] + '" title="' + removeCosts(options[l]) + '" data-bs-content="Loading..." id="' + rosters.units[i].uuid + '_' + options[l] + '"></a>';
                 printOptions += options[l] + " " + popover + "<br>";
             }
         }
@@ -1588,16 +1644,6 @@ function enableUnit(uuid) {
 }
 
 function updateOptions() {
-    for (var i = 0; i < rosters.units.length; i++) {
-        var options = rosters.units[i].options.split(";");
-        getDescriptionForUnit(rosters.units[i].name, rosters.units[i].uuid + "_");
-        for (var l = 0; l < options.length; l++) {
-            if (options[l] != "") {
-                getDescriptionForOption(options[l], rosters.units[i].uuid + "_");
-            }
-        }
-    }
-
     initPopover();
 }
 
@@ -2236,4 +2282,3 @@ function md5(str) {
 
     return temp.toLowerCase();
 }
-

@@ -32,7 +32,7 @@ function createHtmlListAsList(gameSystem) {
         } else {
             armylist += "<tr style=\"background-color:#ffe6d0;\">";
         }
-        armylist += "<td style='width:50px;'><a id='" + list.getDatafile(gameSystem, armies[a]) + "'></a></td><td><a href=\"./aconline.html?army=" + list.getDatafile(gameSystem, armies[a]) + "\">" + armies[a].trim().replaceAll("T9A ", "") + "</a></td>"
+        armylist += "<td style='width:50px;'><a id='" + list.getDatafile(gameSystem, armies[a]) + "'></a></td><td><a href=\"./aconline.html?army=" + list.getDatafile(gameSystem, armies[a]) + "\">" + armies[a].trim().replaceAll("T9A ", "") + "</a></td>";
         armylist += "</tr>";
     }
     armylist += "</table>";
@@ -44,18 +44,15 @@ function createHtmlListAsList(gameSystem) {
 function createHtmlList(gameSystem) {
     var armies = list.getArmiesForGameSystem(gameSystem);
 
-    var armylist = "<div class='container-fluid'>";
-    armylist += "<div class='row row-cols-2 justify-content-center'>";
-    var line = 0;
+    var armylist = "<div class='row row-cols-3 row-cols-sm-4 row-cols-md-5 row-cols-lg-6 g-3 army-grid'>";
     for (var a = 0; a < armies.length; a++) {
-        armylist += "<div class='card card-hover myBorderSelection col myDivColor pt-4 d-flex text-center shadow' style='width: 9rem;'>";
-        armylist += "<a id='" + list.getDatafile(gameSystem, armies[a]) + "' class='card-img-top' href='./aconline.html?army=" + list.getDatafile(gameSystem, armies[a]) + "'></a>";
-        armylist += " <div class='card-body'>";
-        armylist += "<p class='card-text'><a style='color:#e8692d;' href='./aconline.html?army=" + list.getDatafile(gameSystem, armies[a]) + "'>" + armies[a].trim().replaceAll("T9A ", "").replaceAll("[TOW] ", "") + "</a></p>";
-        armylist += "</div>";
-        armylist += "</div>";
+        var datafile = list.getDatafile(gameSystem, armies[a]);
+        var armyName = armies[a].trim().replaceAll("T9A ", "").replaceAll("[TOW] ", "");
+        armylist += "<div class='col army-grid-item'><article class='card card-hover myBorderSelection myDivColor army-card h-100'>";
+        armylist += "<a id='" + datafile + "' class='army-card-icon' href='./aconline.html?army=" + datafile + "' aria-label='Open " + armyName + "'></a>";
+        armylist += "<div class='card-body'><p class='card-text'><a class='army-card-title' href='./aconline.html?army=" + datafile + "'>" + armyName + "</a></p></div>";
+        armylist += "</article></div>";
     }
-    armylist += "</div>";
     armylist += "</div>";
 
     return armylist;
@@ -81,6 +78,14 @@ function getArmies() {
         }
 
         document.getElementById("selection").innerHTML = result;
+        document.getElementById("armySearch").addEventListener("input", filterArmies);
+        document.getElementById("armySearchClear").addEventListener("click", function () {
+            var search = document.getElementById("armySearch");
+            search.value = "";
+            filterArmies();
+            search.focus();
+        });
+        filterArmies();
 
         var armies = list.getArmiesForAll();
         for (var a = 0; a < armies.length; a++) {
@@ -88,6 +93,29 @@ function getArmies() {
         }
     };
     request.send();
+}
+
+function filterArmies() {
+    var search = document.getElementById("armySearch");
+    var query = search.value.trim().toLocaleLowerCase();
+    var visibleCount = 0;
+
+    document.querySelectorAll("#selection .army-grid-item").forEach(function (item) {
+        var title = item.querySelector(".army-card-title").textContent.toLocaleLowerCase();
+        item.hidden = !title.includes(query);
+        if (!item.hidden) {
+            visibleCount++;
+        }
+    });
+
+    document.querySelectorAll("#selection .army-game-system").forEach(function (system) {
+        system.hidden = system.querySelectorAll(".army-grid-item:not([hidden])").length == 0;
+    });
+
+    document.getElementById("armySearchStatus").textContent = query
+        ? visibleCount + (visibleCount == 1 ? " army found" : " armies found")
+        : visibleCount + (visibleCount == 1 ? " army" : " armies");
+    document.getElementById("armySearchEmpty").hidden = visibleCount > 0;
 }
 
 function minimize() {
@@ -101,7 +129,7 @@ function maximize() {
 
 function createDropDown(id, title, content) {
     var result = '\
-	<div class="container-fluid" style="padding-top:10px;">\
+    <div class="container-fluid army-game-system">\
 		<div class="w-auto">\
             <div class=" card text myBorder" style="background-color: transparent; border: 1;">\
                 <div class="myActionButtonBackground">\
@@ -121,6 +149,7 @@ function createDropDown(id, title, content) {
 }
 
 function enableDarkMode() {
+    document.body.classList.add("dark-mode");
     changeCSSBackground(".myDivColor", "black");
     changeCSSForeground(".myDivColor", "white");
     changeCSSBackground(".myBodyColor", "black");
@@ -142,6 +171,7 @@ function enableDarkMode() {
 }
 
 function enableLightMode() {
+    document.body.classList.remove("dark-mode");
     changeCSSBackground(".myDivColor", "white");
     changeCSSForeground(".myDivColor", "black");
     changeCSSBackground(".myBodyColor", "#ebeced");
@@ -156,7 +186,7 @@ function enableLightMode() {
 
     changeCSSForeground(".myHeaderColor", "black");
     changeCSSBackground(".myHeaderColor", "#ebeced");
-    $('#darkLightToggle-demo').prop('checked', true);
+    $('#darkLightToggle').prop('checked', true);
     changeCSSBackground(".myOddLine", "#ffffff");
     saveSession();
 }

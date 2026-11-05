@@ -32,39 +32,41 @@
         <script src="./js/bootstrap-toggle.min.js"></script>
     </head>
 
-    <body class="myBodyColor">
+    <body class="myBodyColor army-browser-page" id="top">
         <nav class="navbar navbar-expand-md navbar-dark fixed-top header bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#top"><img src="pictures/ArmyCreator.png" style="width: 60px;"></a>
-                <ul class="navbar-left h2 text-white">
-                    ArmyCreator online
-                </ul>
+                <a class="navbar-brand" href="#top" aria-label="ArmyCreator Online home"><img src="pictures/ArmyCreator.png" alt="ArmyCreator" style="width: 60px;"></a>
+                <span class="navbar-brand-title">ArmyCreator online</span>
             </div>
         </nav>
-
-        <br>
-        <br>
-        <br>
-        <br>
 
         <div class="container-fluid">
             <div class="w-auto text-start">
                 <div class="card myHeaderColor shadow rounded">
-                    <div class="card-header myActionButtonBackground" >
+                    <div class="card-header army-browser-header">
                         <b>Game systems</b>
-                        <i style="float:right;">
-                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="localStorage.clear();location.reload();" title="Remove cache"><i class="bi bi-trash"></i> Cache</button>
-                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="minimize();" title="Minimize game systems"><i class="bi bi-dash"></i> Hide</button>
-                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="maximize();" title="Maximize game systems"><i class="bi bi-app"></i> Show</button>
-                            <input type="checkbox" checked data-size="mini" data-toggle="toggle" data-on="Light" data-off="Dark" data-onstyle="light" data-offstyle="dark" id="darkLightToggle">
-                        </i>
+                        <div class="army-browser-actions">
+                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="localStorage.clear();location.reload();" title="Remove cache"><i class="bi bi-trash" aria-hidden="true"></i> Cache</button>
+                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="minimize();" title="Minimize game systems"><i class="bi bi-dash" aria-hidden="true"></i> Hide</button>
+                            <button type="button" class="btn btn-sm myActionButtonBackground" onclick="maximize();" title="Maximize game systems"><i class="bi bi-app" aria-hidden="true"></i> Show</button>
+                            <input type="checkbox" checked data-size="mini" data-toggle="toggle" data-on="Light" data-off="Dark" data-onstyle="light" data-offstyle="dark" id="darkLightToggle" aria-label="Toggle light or dark mode">
+                        </div>
                     </div>
                     <div class="card-body">
-                        <p class="card-text" id="selection">
+                        <div class="army-browser-toolbar">
+                            <div class="input-group army-search-field">
+                                <span class="input-group-text army-search-icon" aria-hidden="true"><i class="bi bi-search"></i></span>
+                                <input type="search" class="form-control" id="armySearch" placeholder="Search armies" aria-label="Search armies" autocomplete="off">
+                                <button type="button" class="btn btn-outline-secondary" id="armySearchClear" title="Clear search" aria-label="Clear search"><i class="bi bi-x" aria-hidden="true"></i></button>
+                            </div>
+                            <p id="armySearchStatus" class="army-search-status" aria-live="polite"></p>
+                            <p id="armySearchEmpty" class="army-search-empty" hidden>No armies match this search.</p>
+                        </div>
+                        <div class="card-text" id="selection">
                             <u>If you see this message:</u><br>
                             <b>ArmyCreator online</b> is not working with older browsers like Internet Explorer.<br>
                             Please use a modern Webbrowser (like Firefox, Chrome, Edge, Safari, etc.)!<br>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
