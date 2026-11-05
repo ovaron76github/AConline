@@ -133,8 +133,8 @@ function createDropDown(id, title, content) {
 		<div class="w-auto">\
             <div class=" card text myBorder" style="background-color: transparent; border: 1;">\
                 <div class="myActionButtonBackground">\
-                    <div class="btn" data-bs-toggle="collapse" href="#'+ id + '" role="button" aria-expanded="false" aria-controls="' + id + '">\
-                        <i class="bi bi-chevron-down myActionButtonBackground"></i> <b class="myActionButtonBackground">'+ title + '</b>\
+                    <div class="btn army-game-system-toggle" data-bs-toggle="collapse" href="#'+ id + '" role="button" aria-expanded="true" aria-controls="' + id + '">\
+                        <b class="myActionButtonBackground">'+ title + '</b> <i class="bi bi-chevron-down army-game-system-chevron" aria-hidden="true"></i>\
                     </div>\
                 </div>\
                 <div class="collapse show" style="background-color: transparent;" id="'+ id + '">\

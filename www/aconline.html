@@ -46,22 +46,22 @@
                                 <a class="nav-link card-hover" href="./index.html"><i class="bi bi-shop"></i> Army</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#categoryList"><i class="bi bi-ladder"></i> Categories</a>
+                                <a class="nav-link" href="#categoryList"><i class="bi bi-diagram-3"></i> Categories</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link card-hover" href="#unitlist"><i class="bi bi-list"></i> Units</a>
+                                <a class="nav-link card-hover" href="#unitlist"><i class="bi bi-shield"></i> Units</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link card-hover" href="#optionlist"><i class="bi bi-list-check"></i> Options</a>
+                                <a class="nav-link card-hover" href="#optionlist"><i class="bi bi-sliders"></i> Options</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link card-hover" href="#rosterArea"><i class="bi bi-table"></i> Roster</a>
+                                <a class="nav-link card-hover" href="#rosterArea"><i class="bi bi-card-list"></i> Roster</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link card-hover" href="#calculationArea"><i class="bi bi-calculator"></i> Calculation</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link card-hover" href="#actionArea"><i class="bi bi-menu-button"></i> Actions</a>
+                                <a class="nav-link card-hover" href="#actionArea"><i class="bi bi-lightning-charge"></i> Actions</a>
                             </li>
                         </ul>
                         <ul class="navbar-nav navbar-right">
@@ -78,12 +78,12 @@
         <main class="flex-shrink-0">
 
             <div class="container-fluid mb-3 builder-summary">
-                <div class="row">
+                <div class="row align-items-start gy-2">
                     <!--Army Name-->
-                    <div class="col-sm float-start mt-1">
-                        <div class="text-start">
-                            <div class="" style="float: left;" id="armyIcon"></div>
-                            <div id="armyinfo" style="font-weight: bold;font-style: italic; color:#e8692d;">ArmyName</div>
+                    <div class="col-sm mt-1">
+                        <div class="builder-army-title">
+                            <div class="builder-army-emblem" id="armyIcon"></div>
+                            <div class="builder-army-name" id="armyinfo">ArmyName</div>
                         </div>
                     </div>
             
@@ -102,10 +102,10 @@
             <!--Category List-->
             <div class="container-fluid">
                 <div class="card card-text myBodyColor fixScrolling shadow" id="categoryList">
-                    <div class="myHeaderBackground rounded-top">
-                        <div class="btn" data-bs-toggle="collapse" href="#categories" role="button" aria-expanded="false"
+                    <div class="myHeaderBackground rounded-top builder-section-header">
+                        <div class="btn builder-section-toggle" data-bs-toggle="collapse" href="#categories" role="button" aria-expanded="true"
                              aria-controls="categories">
-                            <i class="bi bi-chevron-down"></i> <i class="bi bi-ladder"></i> <b>Categories</b>
+                            <i class="bi bi-chevron-down" aria-hidden="true"></i> <i class="bi bi-diagram-3" aria-hidden="true"></i> <b>Categories</b>
                         </div>
                     </div>
 
@@ -118,10 +118,10 @@
             <div class="container-fluid builder-workspace">
                 <div class="row g-3">
                     <div class="col-12 col-lg-5 card-text fixScrolling rounded builder-panel" id="unitlist">
-                        <div class="myHeaderBackground rounded-top">
-                            <div class="btn" data-bs-toggle="collapse" href="#collapseUnits" role="button"
-                                 aria-expanded="false" aria-controls="collapseUnits">
-                                <i class="bi bi-chevron-down"></i> <i class="bi bi-list"></i> <b>Units</b>
+                        <div class="myHeaderBackground rounded-top builder-section-header">
+                            <div class="btn builder-section-toggle" data-bs-toggle="collapse" href="#collapseUnits" role="button"
+                                 aria-expanded="true" aria-controls="collapseUnits">
+                                <i class="bi bi-chevron-down" aria-hidden="true"></i> <i class="bi bi-shield" aria-hidden="true"></i> <b>Units</b>
                             </div>
 
                         </div>
@@ -130,16 +130,16 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-7 card-text fixScrolling rounded builder-panel" id="optionlist">
-                        <div class="myHeaderBackground rounded-top">
-                            <div class="btn" data-bs-toggle="collapse" href="#collapseOptions" role="button"
-                                 aria-expanded="false" aria-controls="collapseOptions">
-                                <i class="bi bi-chevron-down"></i> <i class="bi bi-list-check"></i> <b>Options</b>
+                        <div class="myHeaderBackground rounded-top builder-section-header">
+                            <div class="btn builder-section-toggle" data-bs-toggle="collapse" href="#collapseOptions" role="button"
+                                 aria-expanded="true" aria-controls="collapseOptions">
+                                <i class="bi bi-chevron-down" aria-hidden="true"></i> <i class="bi bi-sliders" aria-hidden="true"></i> <b>Options</b>
                             </div>
-                            <a href="#calculationArea" title="Calculation">
-                                <p class="float-end card-text me-3 mt-1"><i class="bi bi-calculator" style="color:#e8692d"></i></p>
+                            <a class="builder-section-shortcut" href="#calculationArea" title="Calculation">
+                                <i class="bi bi-calculator" aria-hidden="true"></i>
                             </a>
-                            <a href="#unitlist" title="Units">
-                                <p class="float-end card-text me-3 mt-1"><i class="bi bi-list" style="color:#e8692d"></i></p>
+                            <a class="builder-section-shortcut" href="#unitlist" title="Units">
+                                <i class="bi bi-list" aria-hidden="true"></i>
                             </a>
                         </div>
                         <div class="collapse show shadow rounded-bottom myDivColor myBorder" id="collapseOptions">
@@ -160,10 +160,10 @@
             <!--Roster Area-->
             <div class="container-fluid" style="padding-top:20px;">
                 <div class="card-text fixScrolling shadow rounded myBorder" id="rosterArea">
-                    <div class="myHeaderBackground rounded-top">
-                        <div class="btn" data-bs-toggle="collapse" href="#rosterTableCollape" role="button"
-                             aria-expanded="false" aria-controls="rosterTableCollape">
-                            <i class="bi bi-chevron-down"></i> <i class="bi bi-table"></i> <b>Roster</b>
+                    <div class="myHeaderBackground rounded-top roster-area-header builder-section-header">
+                        <div class="btn roster-collapse-toggle builder-section-toggle" data-bs-toggle="collapse" href="#rosterTableCollape" role="button"
+                             aria-expanded="true" aria-controls="rosterTableCollape">
+                            <i class="bi bi-chevron-down" aria-hidden="true"></i> <i class="bi bi-card-list" aria-hidden="true"></i> <b>Roster</b>
                         </div>
                     </div>
 
@@ -178,16 +178,16 @@
                 </div>
             </div>
 
-            <!--Calculation Area + Action buttons-->
+            <!--Calculation Area-->
             <div class="container-fluid">
                     <!-- Calculation Area-->
                     <div class="row">
                         <div class="col-md" style="padding-top:20px;">
                         <div class="card-text fixScrolling shadow rounded myBorder myDivColor" id="calculationArea">
-                            <div class="myHeaderBackground rounded-top">
-                                <div class="btn" data-bs-toggle="collapse" href="#calculation" role="button"
-                                     aria-expanded="false" aria-controls="calculation">
-                                    <i class="bi bi-chevron-down"></i> <i class="bi bi-calculator"></i> <b>Calculation</b>
+                            <div class="myHeaderBackground rounded-top builder-section-header">
+                                <div class="btn builder-section-toggle" data-bs-toggle="collapse" href="#calculation" role="button"
+                                     aria-expanded="true" aria-controls="calculation">
+                                    <i class="bi bi-chevron-down" aria-hidden="true"></i> <i class="bi bi-calculator" aria-hidden="true"></i> <b>Calculation</b>
                                 </div>
                             </div>
                             <div class="collapse show myDivColor rounded-bottom" id="calculation"></div>
@@ -195,91 +195,71 @@
                     </div>
                     </div>
 
-                    <div class="row">
-                    <!--Action buttons-->
-                    <div class="col-md" style="padding-top:20px;">
-                        <div class="card-text fixScrolling shadow rounded myBorder" id="actionArea">
-                            <div class="myHeaderBackground rounded-top">
-                                <div class="btn" data-bs-toggle="collapse" href="#actions" role="button"
-                                     aria-expanded="false" aria-controls="actions">
-                                    <i class="bi bi-chevron-down"></i> <i class="bi bi-menu-button"></i> <b>Actions</b>
+            </div>
+
+            <div class="container-fluid roster-action-container">
+                <section class="roster-action-panel myDivColor" id="actionArea" aria-labelledby="actionAreaTitle">
+                    <div class="myHeaderBackground rounded-top roster-area-header builder-section-header">
+                        <button class="btn roster-collapse-toggle builder-section-toggle" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#actionPanelContent" aria-expanded="true"
+                                aria-controls="actionPanelContent">
+                            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                            <i class="bi bi-lightning-charge" aria-hidden="true"></i>
+                            <b id="actionAreaTitle">Actions</b>
+                        </button>
+                    </div>
+                    <div class="collapse show" id="actionPanelContent">
+                        <div class="roster-action-content">
+                            <div class="roster-action-heading">
+                                <div class="form-floating roster-name-field">
+                                    <input type="text" class="form-control" id="rosterName" placeholder="Roster name">
+                                    <label for="rosterName">Roster name</label>
                                 </div>
                             </div>
-                            <div class="collapse show myDivColor rounded-bottom" id="actions">
-                                <div class="container-fluid rounded-bottom myDivColor">
-                                    <div class="dropdown rounded-bottom myDivColor" style="margin-left:-15px;">
-                                        <button class="btn btn-sm card-hover dropdown-toggle myActionButtonBackground"
-                                                style="margin-top:10px;margin-bottom:10px; width:120px;" type="button" id="uploadButton"
-                                                data-bs-toggle="dropdown" aria-expanded="false">Load</button>
-                                        <ul class="dropdown-menu myActionButtonBackground" aria-labelledby="uploadButton">
-                                            <li><a class="dropdown-item myActionButtonBackground"
-                                                   id="import-pfx-button"><i class="bi bi-file-arrow-down"></i> Load
-                                                    from <b>Device</b></a></li>
-                                            <input type="file" id="file-input" />
-                                            <li><a class="dropdown-item myActionButtonBackground" id="cloudLoginBtn"
-                                                   data-bs-toggle="modal" data-bs-target="#cloudLogin"
-                                                   title="Cloud login"><i class="bi bi-cloud-download"></i> Load
-                                                    from <b>CreatorCloud</b></a>
-                                            </li>
-                                        </ul>
-                                        <button class="btn btn-sm card-hover dropdown-toggle myActionButtonBackground"
-                                                style="margin-top:10px;margin-bottom:10px; width:120px;" type="button" id="showButton"
-                                                data-bs-toggle="dropdown" aria-expanded="false">Show</button>
-                                        <ul class="dropdown-menu myActionButtonBackground" aria-labelledby="showButton">
-                                            <li><a class="dropdown-item myActionButtonBackground" id="showHtml"
-                                                   onclick="createAndShowHtml();"><i class="bi bi-file-text"></i> Show <b>HTML</b>
-                                                    Roster</a></li>
-                                            <li><a class="dropdown-item myActionButtonBackground" id="showPDF"
-                                                   onclick="createAndShowPDF();"><i class="bi bi-file-text"></i> Show <b>PDF</b>
-                                                    Roster</a></li>
-
-                                            <li><a class="dropdown-item myActionButtonBackground" id="showBBCode"
-                                                   onclick="createBBcode();"><i class="bi bi-file-text"></i> Show <b>BBcode</b>
-                                                    Roster</a></li>
-                                            <li><a class="dropdown-item myActionButtonBackground" id="showTextCode"
-                                                   onclick="createTextRoster();"><i class="bi bi-file-text"></i> Show
-                                                    <b>Text</b> Roster</a></li>
-                                        </ul><br>
-                                        <button class="btn btn-sm card-hover dropdown-toggle myActionButtonBackground"
-                                                style="margin-top:10px;margin-bottom:10px; width:120px;" type="button"
-                                                id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Download</button>
-                                        <ul class="dropdown-menu myActionButtonBackground"
-                                            aria-labelledby="dropdownMenuButton1">
-                                            <li><a class="dropdown-item myActionButtonBackground" id="download"
-                                                   onclick="downloadRoster();"><i class="bi bi-download"></i> Download
-                                                    <b>Roster</b></a></li>
-                                            <li><a class="dropdown-item myActionButtonBackground" id="downloadHTML"
-                                                   onclick="createHtml();"><i class="bi bi-download"></i> Download
-                                                    <b>HTML</b></a></li>
-                                            <li><a class="dropdown-item myActionButtonBackground" id="downloadPDF"
-                                                   onclick="createPdf();"><i class="bi bi-download"></i> Download
-                                                    <b>PDF</b></a></li>	
-                                        </ul>
-                                        <button class="btn btn-sm card-hover dropdown-toggle myActionButtonBackground"
-                                                style="margin-top:10px;margin-bottom:10px; width:120px;" type="button"
-                                                id="dropDownButtonUpload" data-bs-toggle="dropdown"
-                                                aria-expanded="false">Upload</button>
-                                        <ul class="dropdown-menu myActionButtonBackground"
-                                            aria-labelledby="dropDownButtonUpload">
-                                            <li><a class="dropdown-item myActionButtonBackground" id="cloudUploadBtn"
-                                                   data-bs-toggle="modal" data-bs-target="#cloudLoginUpload"
-                                                   title="Cloud login"><i class="bi bi-cloud-upload"></i> Upload to
-                                                    <b>CreatorCloud</b></a></li>
-                                        </ul>
-                                        
-                                        <div class="col-auto form-floating" style="margin-top:10px;">
-                                            <input type="text" class="form-control" id="rosterName" placeholder="roster">
-                                            <label for="rosterName"><b>Roster name</b> (without extention)</label>
-                                        </div>
-                                        <br>
-
-                                    </div>
+                            <div class="roster-action-toolbar">
+                                <div class="dropdown roster-action-group">
+                                    <button class="btn dropdown-toggle" type="button" id="uploadButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-folder2-open" aria-hidden="true"></i><span>Load</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="uploadButton">
+                                        <li><a class="dropdown-item" id="import-pfx-button"><i class="bi bi-file-arrow-down" aria-hidden="true"></i>Load from device</a></li>
+                                        <li><a class="dropdown-item" id="cloudLoginBtn" data-bs-toggle="modal"
+                                               data-bs-target="#cloudLogin" title="Cloud login"><i class="bi bi-cloud-download" aria-hidden="true"></i>Load from CreatorCloud</a></li>
+                                    </ul>
+                                    <input type="file" id="file-input">
                                 </div>
+                                <div class="dropdown roster-action-group">
+                                    <button class="btn dropdown-toggle" type="button" id="showButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-eye" aria-hidden="true"></i><span>Show</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="showButton">
+                                        <li><a class="dropdown-item" id="showHtml" onclick="createAndShowHtml();"><i class="bi bi-file-text" aria-hidden="true"></i>Show HTML roster</a></li>
+                                        <li><a class="dropdown-item" id="showPDF" onclick="createAndShowPDF();"><i class="bi bi-file-text" aria-hidden="true"></i>Show PDF roster</a></li>
+                                        <li><a class="dropdown-item" id="showBBCode" onclick="createBBcode();"><i class="bi bi-file-text" aria-hidden="true"></i>Show BBCode roster</a></li>
+                                        <li><a class="dropdown-item" id="showTextCode" onclick="createTextRoster();"><i class="bi bi-file-text" aria-hidden="true"></i>Show text roster</a></li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown roster-action-group">
+                                    <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-download" aria-hidden="true"></i><span>Download</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                        <li><a class="dropdown-item" id="download" onclick="downloadRoster();"><i class="bi bi-download" aria-hidden="true"></i>Download roster</a></li>
+                                        <li><a class="dropdown-item" id="downloadHTML" onclick="createHtml();"><i class="bi bi-download" aria-hidden="true"></i>Download HTML</a></li>
+                                        <li><a class="dropdown-item" id="downloadPDF" onclick="createPdf();"><i class="bi bi-download" aria-hidden="true"></i>Download PDF</a></li>
+                                    </ul>
+                                </div>
+                                <button class="btn roster-upload-button" type="button" id="cloudUploadBtn"
+                                        data-bs-toggle="modal" data-bs-target="#cloudLoginUpload" title="Upload to CreatorCloud">
+                                    <i class="bi bi-cloud-upload" aria-hidden="true"></i><span>Upload to CreatorCloud</span>
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
 
             <br><br><br>
@@ -302,18 +282,35 @@
         <!--Attachment selection-->
         <div class="modal fade" id="addAttachment" tabindex="-1" aria-labelledby="titleAttachment" aria-hidden="true"
              uuid="">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header myDivColor">
-                        <h5 class="modal-title" id="titleAttachment">Attach unit...</h5>
+            <div class="modal-dialog modal-dialog-centered cloud-modal-dialog">
+                <div class="modal-content cloud-modal">
+                    <div class="modal-header cloud-modal-header">
+                        <div class="cloud-modal-heading">
+                            <span class="cloud-modal-icon" aria-hidden="true"><i class="bi bi-folder-plus"></i></span>
+                            <div>
+                                <h5 class="modal-title" id="titleAttachment">Attach a unit</h5>
+                                <p class="cloud-modal-subtitle mb-0">Choose an available unit to attach.</p>
+                            </div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body myDivColor" id="attachlist">
+                    <div class="modal-body cloud-modal-body attach-modal-body">
+                        <label class="visually-hidden" for="attachUnitSearch">Search units</label>
+                        <div class="input-group attach-unit-search">
+                            <span class="input-group-text" aria-hidden="true"><i class="bi bi-search"></i></span>
+                            <input type="search" class="form-control" id="attachUnitSearch"
+                                   placeholder="Search available units" autocomplete="off"
+                                   oninput="filterAttachmentUnits();">
+                        </div>
+                        <div id="attachlist" class="attach-unit-list" role="radiogroup"
+                             aria-label="Available units"></div>
+                        <p class="attach-unit-empty" id="attachUnitEmpty" hidden></p>
                     </div>
-                    <div class="modal-footer myDivColor">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="saveAttachment();">Attach
-                            selected</button>
+                    <div class="modal-footer cloud-modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary cloud-primary-button" onclick="saveAttachment();">
+                            <i class="bi bi-paperclip me-1" aria-hidden="true"></i>Attach selected
+                        </button>
                     </div>
                 </div>
             </div>
@@ -324,68 +321,96 @@
 
         <!--Cloud Login Download-->
         <div class="modal fade" id="cloudLogin" tabindex="-1" aria-labelledby="titleCloud" aria-hidden="true" uuid="">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header myDivColor">
-                        <h5 class="modal-title" id="titleCloud">CreatorCloud login</h5>
+            <div class="modal-dialog modal-dialog-centered cloud-modal-dialog">
+                <div class="modal-content cloud-modal">
+                    <div class="modal-header cloud-modal-header">
+                        <div class="cloud-modal-heading">
+                            <span class="cloud-modal-icon" aria-hidden="true"><i class="bi bi-cloud-download"></i></span>
+                            <div>
+                                <h5 class="modal-title" id="titleCloud">Load from CreatorCloud</h5>
+                                <p class="cloud-modal-subtitle mb-0">Sign in to choose a roster for this army.</p>
+                            </div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body myDivColor" id="userCredentials">
-                        <div class="form-group">
-                            <label for="userInput">Username</label>
-                            <input type="username" class="form-control" id="userInput" placeholder="Enter username">
+                    <div class="modal-body cloud-modal-body" id="userCredentials">
+                        <div class="mb-3">
+                            <label class="form-label" for="userInput">Username</label>
+                            <input type="text" class="form-control cloud-form-control" id="userInput"
+                                   placeholder="Your CreatorCloud username" autocomplete="username" required>
                         </div>
-                        <div class="form-group">
-                            <label for="inputPassword">Password</label>
-                            <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+                        <div class="mb-3">
+                            <label class="form-label" for="inputPassword">Password</label>
+                            <input type="password" class="form-control cloud-form-control" id="inputPassword"
+                                   placeholder="Your password" autocomplete="current-password" required>
                         </div>
+                        <div class="cloud-feedback" id="cloudLoginFeedback" role="alert" aria-live="polite" hidden></div>
                     </div>
-                    <div class="modal-footer myDivColor">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="listCloudData();">Show rosters</button>
+                    <div class="modal-footer cloud-modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary cloud-primary-button" id="cloudLoginSubmit"
+                                onclick="listCloudData();"><i class="bi bi-list-ul me-1" aria-hidden="true"></i>Show rosters</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!--Cloud Login Upload-->
-        <div class="modal fade" id="cloudLoginUpload" tabindex="-1" aria-labelledby="titleCloud" aria-hidden="true" uuid="">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header myDivColor">
-                        <h5 class="modal-title" id="titleCloudUpload">CreatorCloud Upload</h5>
+        <div class="modal fade" id="cloudLoginUpload" tabindex="-1" aria-labelledby="titleCloudUpload" aria-hidden="true" uuid="">
+            <div class="modal-dialog modal-dialog-centered cloud-modal-dialog">
+                <div class="modal-content cloud-modal">
+                    <div class="modal-header cloud-modal-header">
+                        <div class="cloud-modal-heading">
+                            <span class="cloud-modal-icon" aria-hidden="true"><i class="bi bi-cloud-upload"></i></span>
+                            <div>
+                                <h5 class="modal-title" id="titleCloudUpload">Upload to CreatorCloud</h5>
+                                <p class="cloud-modal-subtitle mb-0">Share this roster with your CreatorCloud account.</p>
+                            </div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body myDivColor" id="userCredentialsUpload">
-                        <div class="input-group mb-3">
-                            <input type="username" class="form-control" id="userInputUpload"
-                                   placeholder="Enter cloud username">
-                            <span class="input-group-text col-3" id="userSpan">Username</span>
+                    <div class="modal-body cloud-modal-body" id="userCredentialsUpload">
+                        <div class="cloud-form-section">
+                            <h6 class="cloud-section-title"><i class="bi bi-person-fill me-2" aria-hidden="true"></i>Account</h6>
+                            <div class="mb-3">
+                                <label class="form-label" for="userInputUpload">Username</label>
+                                <input type="text" class="form-control cloud-form-control" id="userInputUpload"
+                                       placeholder="Your CreatorCloud username" autocomplete="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="inputPasswordUpload">Password</label>
+                                <input type="password" class="form-control cloud-form-control" id="inputPasswordUpload"
+                                       placeholder="Your password" autocomplete="current-password" required>
+                            </div>
                         </div>
-                        <div class="input-group mb-3">
-                            <input type="password" class="form-control" id="inputPasswordUpload"
-                                   placeholder="Enter cloud password">
-                            <span class="input-group-text col-3" id="passwordSpan">Password</span>
+                        <div class="cloud-form-section">
+                            <h6 class="cloud-section-title"><i class="bi bi-card-text me-2" aria-hidden="true"></i>Roster details</h6>
+                            <div class="mb-3">
+                                <label class="form-label" for="inputFilenamedUpload">Filename</label>
+                                <input type="text" class="form-control cloud-form-control" id="inputFilenamedUpload"
+                                       placeholder="e.g. my-roster" autocomplete="off"
+                                       oninput="this.value = this.value.toLowerCase();" required>
+                                <div class="form-text">The .rst extension is added automatically.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="descriptionUpload">Comment</label>
+                                <textarea class="form-control cloud-form-control" id="descriptionUpload" rows="2"
+                                          placeholder="Add a short description for this roster" required></textarea>
+                            </div>
                         </div>
-                        <div class="input-group mb-3">
-                            <input type="filename" class="form-control" id="inputFilenamedUpload"
-                                   placeholder="Roster filename for cloud" onkeyup="this.value = this.value.toLowerCase();">
-                            <span class="input-group-text col-3" id="filenameSpan">Filename</span>
-                        </div>
-                        <div class="input-group mb-3">
-                            <textarea class="form-control" id="descriptionUpload" aria-label="Description"
-                                      placeholder="Description for roster"></textarea>
-                            <span class="input-group-text col-3" id="descriptionSpan">Comment</span>
-                        </div>
-                        <div class="form-check form-switch">
+                        <div class="cloud-privacy-option">
                             <input class="form-check-input" type="checkbox" id="shareWithOthersUpload">
-                            <label class="form-check-label" for="shareWithOthersUpload">Don't share with other users</label>
+                            <div>
+                                <label class="form-check-label fw-semibold" for="shareWithOthersUpload">Keep this roster private</label>
+                                <div class="form-text mt-0">Only you can see this roster in CreatorCloud.</div>
+                            </div>
                         </div>
+                        <div class="cloud-feedback" id="cloudUploadFeedback" role="alert" aria-live="polite" hidden></div>
                     </div>
-                    <div class="modal-footer myDivColor">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="uploadRostertoCloud();">Upload
-                            roster</button>
+                    <div class="modal-footer cloud-modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary cloud-primary-button" id="cloudUploadSubmit"
+                                onclick="uploadRostertoCloud();"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Upload roster</button>
                     </div>
                 </div>
             </div>
@@ -394,35 +419,77 @@
         <!--Cloud roster list-->
         <div class="modal fade" id="cloudRosterSelection" tabindex="-1" role="dialog"
              aria-labelledby="cloudRosterSelectionTitle" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-                <div class="modal-content">
-                    <div class="modal-header myDivColor">
-                        <h5 class="modal-title" id="cloudRosterSelectionTitle">Cloud Roster</h5>
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable cloud-roster-dialog" role="document">
+                <div class="modal-content cloud-modal">
+                    <div class="modal-header cloud-modal-header">
+                        <div class="cloud-modal-heading">
+                            <span class="cloud-modal-icon" aria-hidden="true"><i class="bi bi-folder2-open"></i></span>
+                            <div>
+                                <h5 class="modal-title" id="cloudRosterSelectionTitle">Your CreatorCloud rosters</h5>
+                                <p class="cloud-modal-subtitle mb-0">Choose a roster to load into this army.</p>
+                            </div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body myDivColor" id="cloudRosterSelectionText"></div>
-                    <div class="modal-footer myDivColor">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    <div class="modal-body cloud-modal-body cloud-roster-body">
+                        <label class="visually-hidden" for="cloudRosterSearch">Search rosters</label>
+                        <div class="input-group cloud-roster-search">
+                            <span class="input-group-text" aria-hidden="true"><i class="bi bi-search"></i></span>
+                            <input type="search" class="form-control" id="cloudRosterSearch"
+                                   placeholder="Search by name, filename, or uploader" autocomplete="off"
+                                   oninput="filterCloudRosters();">
+                            <span class="input-group-text cloud-roster-count" id="cloudRosterCount" aria-live="polite"></span>
+                        </div>
+                        <div class="cloud-roster-scope">
+                            <input class="form-check-input" type="checkbox" id="cloudRosterAllUsers"
+                                   onchange="reloadCloudRosters();">
+                            <div>
+                                <label class="form-check-label fw-semibold" for="cloudRosterAllUsers">Include rosters from all users</label>
+                                <div class="form-text mt-0">Show community rosters for this army as well as your own.</div>
+                            </div>
+                        </div>
+                        <div class="cloud-roster-loading" id="cloudRosterLoading" role="status" hidden>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span>Loading CreatorCloud rosters...</span>
+                        </div>
+                        <div class="cloud-roster-list" id="cloudRosterSelectionText" role="radiogroup"
+                             aria-label="CreatorCloud rosters"></div>
+                        <p class="cloud-roster-empty" id="cloudRosterNoResults" hidden>No rosters match your search.</p>
+                    </div>
+                    <div class="modal-footer cloud-modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                                 onclick="$('#cloudRosterSelection').modal('hide');">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="loadCloudRoster();">Load Roster</button>
+                        <button type="button" class="btn btn-primary cloud-primary-button" id="cloudRosterLoadSubmit" onclick="loadCloudRoster();" disabled>
+                            <i class="bi bi-download me-1" aria-hidden="true"></i>Load roster
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!--Confirmation box-->
-        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmDialog" aria-hidden="true"
-             id="confirmBox">
-            <div class="modal-dialog modal-sm" role="document">
-                <div class="modal-content">
-                    <div class="modal-header myDivColor">
-                        <h5 class="modal-title" id="confirmDialogTitle">Confirmation</h5>
+        <div class="modal fade" tabindex="-1" aria-labelledby="confirmDialogTitle" aria-describedby="confirmText"
+             aria-hidden="true" id="confirmBox">
+            <div class="modal-dialog modal-dialog-centered confirm-modal-dialog">
+                <div class="modal-content cloud-modal">
+                    <div class="modal-header cloud-modal-header">
+                        <div class="cloud-modal-heading">
+                            <span class="cloud-modal-icon confirm-modal-icon" aria-hidden="true">
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </span>
+                            <div>
+                                <h5 class="modal-title" id="confirmDialogTitle">Confirmation</h5>
+                                <p class="cloud-modal-subtitle mb-0">This action cannot be undone.</p>
+                            </div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body myDivColor" id="confirmText">Should list be deleted?</div>
-                    <div class="modal-footer myDivColor">
-                        <button type="button" class="btn btn-primary" id="modal-btn-yes">Yes</button>
-                        <button type="button" class="btn btn-secondary" id="modal-btn-no">No</button>
+                    <div class="modal-body cloud-modal-body" id="confirmText">Should list be deleted?</div>
+                    <div class="modal-footer cloud-modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" id="modal-btn-no" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger confirm-destructive-button" id="modal-btn-yes">
+                            <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>Confirm
+                        </button>
                     </div>
                 </div>
             </div>

@@ -434,7 +434,7 @@ function loadSession() {
     }
 
     if (localStorage.rosters) {
-        if (localStorage.rostername == armyname) {
+        if (getArmyNameFromRST(localStorage.rosters) == armyname) {
             loadRST(localStorage.rosters);
             createRosterTable();
             checkRooster();
@@ -616,19 +616,17 @@ function createCategories(categories, selectedCategory) {
 }
 
 function createUnits(units, selectedUnit) {
-    let result = "<div class=\"btn-group-vertical w-100 p-2\"><ul>";
+    let result = "<div class=\"unit-list-container\"><ul class=\"unit-list\">";
 
     var unitCount = units.length;
-    if (unitCount>9) {
-        result = "<div style=\"column-width:400px; column-gap:0; margin-left:-22px;\"><ul>"
+    if (unitCount > 9) {
+        result = "<div class=\"unit-list-container unit-list-columns\"><ul class=\"unit-list\">"
     }
 
     for (var i = 0; i < units.length; i++) {
         var unitName = units[i];
-        if (unitName.startsWith(selectedUnit + " @")) {
-            unitName = "<b>" + unitName + "</b>";
-        }
-        result += "<li style='list-style: none;'><button type=\"button\" onclick=\"showOptions('" + units[i] + "')\" class=\"btn rounded text-hover myDivColor\" style='text-align: left;'>&bull; " + formatUnit(unitName) + "</button></li>";
+        var isSelected = unitName.startsWith(selectedUnit + " @");
+        result += "<li class=\"unit-list-item\"><button type=\"button\" onclick=\"showOptions('" + units[i] + "')\" class=\"btn unit-option-button text-hover myDivColor" + (isSelected ? " is-selected" : "") + "\" aria-pressed=\"" + isSelected + "\">" + formatUnit(unitName) + "</button></li>";
     }
     result += "</ul></div>";
     return result;
@@ -672,11 +670,11 @@ function initPopover() {
 }
 
 function createOption(type, options) {
-    let result = "<div><label class=\"badge\" style=\"background-color:#f4b477;\">" + type + "</label>";
+    let result = "<div class=\"option-group\"><label class=\"badge option-group-badge\" style=\"background-color:#f4b477;\">" + type + "</label>";
 
     for (var i = 0; i < options.length; i++) {
         var popover = '<a tabindex="0" class="bi text-scale-hover bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" data-description-type="option" data-description-name="' + options[i] + '" title="' + removeCosts(options[i]) + '" data-bs-content="Loading..." id="desc_' + options[i] + '"></a>';
-        result += "<div class=\"form-check text-hover myDivColor\"><input class=\"form-check-input\" type=\"checkbox\" value=\"\" onclick=\"doLiveCheck('" + options[i] + "');\" id=\"option_" + options[i] + "\"><label class=\"form-check-label btn-sm\" for=\"option_" + options[i] + "\" id=\"label_" + options[i] + "\">" + options[i] + "</label>" + popover + "</div>";
+        result += "<div class=\"form-check text-hover myDivColor option-row\"><input class=\"form-check-input option-checkbox\" type=\"checkbox\" value=\"\" onclick=\"doLiveCheck('" + options[i] + "');\" id=\"option_" + options[i] + "\"><label class=\"form-check-label btn-sm option-label\" for=\"option_" + options[i] + "\" id=\"label_" + options[i] + "\">" + options[i] + "</label>" + popover + "</div>";
     }
     result += "</div>";
 
@@ -764,7 +762,7 @@ function getCategoriesFromAC() {
 
 function getArmyIcon() {
     if (localStorage.getItem(armydatafile)) {
-        document.getElementById("armyIcon").innerHTML = "<img src='data:image/png;base64, " + localStorage.getItem(armydatafile) + "' alt='logo' style='float:left;height:40px;border:1px solid #e8692d;' />&nbsp;";
+        document.getElementById("armyIcon").innerHTML = "<img class='builder-army-emblem-image' src='data:image/png;base64, " + localStorage.getItem(armydatafile) + "' alt='' />";
     } else {
         let url = getServer("/armyicon/" + armydatafile);
         let request = new XMLHttpRequest();
@@ -772,7 +770,7 @@ function getArmyIcon() {
         request.responseType = 'text';
         request.onload = function () {
             var icon = request.response;
-            document.getElementById("armyIcon").innerHTML = "<img src='data:image/png;base64, " + icon + "' alt='logo' style='float:left;height:40px;border:1px solid #e8692d;' />&nbsp;";
+            document.getElementById("armyIcon").innerHTML = "<img class='builder-army-emblem-image' src='data:image/png;base64, " + icon + "' alt='' />";
         };
         request.send();
     }
@@ -985,78 +983,215 @@ function decodeHTMLEntities(text) {
             .text();
 }
 
+function setCloudFeedback(elementId, message) {
+    var feedback = document.getElementById(elementId);
+    feedback.textContent = message;
+    feedback.hidden = message.length == 0;
+}
+
+function setCloudButtonLoading(buttonId, isLoading, idleMarkup, loadingText) {
+    var button = document.getElementById(buttonId);
+    button.disabled = isLoading;
+    button.setAttribute("aria-busy", isLoading ? "true" : "false");
+    button.innerHTML = isLoading
+            ? '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>' + loadingText
+            : idleMarkup;
+}
+
 function listCloudData() {
-    var username = document.getElementById("userInput").value;
+    var username = document.getElementById("userInput").value.trim();
     var password = document.getElementById("inputPassword").value;
 
-    if (username != "undefined") {
-        localStorage.cloudUser = username;
-    }
-    if (password != "undefined") {
-        localStorage.cloudPwd = password;
+    if (username.length == 0 || password.length == 0) {
+        setCloudFeedback("cloudLoginFeedback", "Enter your CreatorCloud username and password to continue.");
+        (username.length == 0 ? document.getElementById("userInput") : document.getElementById("inputPassword")).focus();
+        return;
     }
 
+    setCloudFeedback("cloudLoginFeedback", "");
+    setCloudButtonLoading("cloudLoginSubmit", true,
+            '<i class="bi bi-list-ul me-1" aria-hidden="true"></i>Show rosters', "Connecting...");
+    localStorage.cloudUser = username;
+    localStorage.cloudPwd = password;
 
-    $('#cloudLogin').modal('hide');
-    getCloudRoster(username, password);
+    getCloudRoster(username, password, document.getElementById("cloudRosterAllUsers").checked);
 }
 
-function createCloudRosterCheckbox(cloudRosterData) {
-    var result = '\
-		<div class="form-check">\
-		<input class="form-check-input" type="radio" name="flexCloudRoster" id="cloud_' + cloudRosterData.file_id + '">\
-		<label class="form-check-label" for="cloud_' + cloudRosterData.file_id + '">\
-		' + cloudRosterData.comment + '\
-		</label>\
-	</div>\
-	';
+function appendCloudRosterMeta(container, iconClass, text) {
+    if (text == null || String(text).trim() == "") {
+        return;
+    }
 
-    return result;
+    var item = document.createElement("span");
+    item.className = "cloud-roster-meta";
+    var icon = document.createElement("i");
+    icon.className = "bi " + iconClass;
+    icon.setAttribute("aria-hidden", "true");
+    item.appendChild(icon);
+    item.appendChild(document.createTextNode(" " + String(text).trim()));
+    container.appendChild(item);
 }
 
-function downloadCloudRoster(url) {
+function createCloudRosterCheckbox(cloudRosterData, index) {
+    var option = document.createElement("div");
+    option.className = "cloud-roster-option";
+
+    var radio = document.createElement("input");
+    radio.className = "cloud-roster-radio";
+    radio.type = "radio";
+    radio.name = "flexCloudRoster";
+    radio.id = "cloudRosterOption" + index;
+    radio.value = cloudRosterData.file_id;
+    radio.dataset.rosterName = (cloudRosterData.filename || "").replace(/\.rst$/i, "");
+    radio.addEventListener("change", function () {
+        document.querySelectorAll(".cloud-roster-option").forEach(function (item) {
+            item.classList.toggle("is-selected", item.contains(radio));
+        });
+        document.getElementById("cloudRosterLoadSubmit").disabled = false;
+    });
+
+    var card = document.createElement("label");
+    card.className = "cloud-roster-card";
+    card.htmlFor = radio.id;
+
+    var content = document.createElement("span");
+    content.className = "cloud-roster-card-content";
+
+    var title = document.createElement("span");
+    title.className = "cloud-roster-title";
+    title.textContent = cloudRosterData.comment || cloudRosterData.filename || "Untitled roster";
+    content.appendChild(title);
+
+    if (cloudRosterData.filename) {
+        var filename = document.createElement("span");
+        filename.className = "cloud-roster-filename";
+        filename.textContent = cloudRosterData.filename;
+        content.appendChild(filename);
+    }
+
+    var metadata = document.createElement("span");
+    metadata.className = "cloud-roster-metadata";
+    appendCloudRosterMeta(metadata, "bi-person", cloudRosterData.uploader);
+    appendCloudRosterMeta(metadata, "bi-calendar3", cloudRosterData.uploaddate);
+    appendCloudRosterMeta(metadata, "bi-file-earmark-text", cloudRosterData.type);
+    if (cloudRosterData.comment_cnt != null && String(cloudRosterData.comment_cnt).trim() != "") {
+        var commentCount = String(cloudRosterData.comment_cnt).trim();
+        appendCloudRosterMeta(metadata, "bi-chat-left-text",
+                commentCount + (commentCount == "1" ? " comment" : " comments"));
+    }
+    if (metadata.childNodes.length > 0) {
+        content.appendChild(metadata);
+    }
+
+    card.appendChild(content);
+    option.appendChild(radio);
+    option.appendChild(card);
+    option.dataset.search = [
+        cloudRosterData.comment,
+        cloudRosterData.filename,
+        cloudRosterData.uploader,
+        cloudRosterData.type,
+        cloudRosterData.uploaddate
+    ].join(" ").toLocaleLowerCase();
+    return option;
+}
+
+function downloadCloudRoster(url, rosterName) {
     let requestFile = new XMLHttpRequest();
     requestFile.responseType = 'text';
     requestFile.open('GET', url);
     requestFile.onload = function () {
+        if (requestFile.status < 200 || requestFile.status >= 300) {
+            showErrorTost("Error", "<b>CreatorCloud:</b> Could not download this roster.");
+            return;
+        }
         var rstFile = requestFile.response;
         loadRST(rstFile);
+        document.getElementById("rosterName").value = rosterName;
+        saveSession();
         checkRooster();
     }
     requestFile.send();
 }
 
 function loadCloudRoster() {
-    $('#cloudRosterSelection').modal('hide');
-    var rosterList = document.querySelectorAll('*[id^="cloud_"]');
-    for (var i = 0; i < rosterList.length; i++) {
-        if (rosterList[i].checked == true) {
-            var downloadUrl = cloudserver + "download.php?d=" + rosterList[i].id.replaceAll("cloud_", "");
-            downloadCloudRoster(downloadUrl);
-        }
+    var selectedRoster = document.querySelector('input[name="flexCloudRoster"]:checked');
+    if (selectedRoster == null) {
+        return;
     }
+    $('#cloudRosterSelection').modal('hide');
+    var downloadUrl = cloudserver + "download.php?d=" + encodeURIComponent(selectedRoster.value);
+    downloadCloudRoster(downloadUrl, selectedRoster.dataset.rosterName);
 }
 
 function createRosterSelection(rosters) {
-    var result = "";
-
+    var result = document.createDocumentFragment();
     for (var i = 0; i < rosters.length; i++) {
-        result += createCloudRosterCheckbox(rosters[i]);
+        result.appendChild(createCloudRosterCheckbox(rosters[i], i));
     }
     return result;
 }
 
-function getCloudRoster(username, password) {
+function filterCloudRosters() {
+    var search = document.getElementById("cloudRosterSearch").value.trim().toLocaleLowerCase();
+    var options = document.querySelectorAll("#cloudRosterSelectionText .cloud-roster-option");
+    var visibleCount = 0;
+    options.forEach(function (option) {
+        var isVisible = option.dataset.search.indexOf(search) != -1;
+        option.hidden = !isVisible;
+        if (!isVisible && option.querySelector('input[name="flexCloudRoster"]').checked) {
+            option.querySelector('input[name="flexCloudRoster"]').checked = false;
+            option.classList.remove("is-selected");
+        }
+        if (isVisible) {
+            visibleCount++;
+        }
+    });
+
+    var totalCount = options.length;
+    document.getElementById("cloudRosterLoadSubmit").disabled =
+            document.querySelector('input[name="flexCloudRoster"]:checked') == null;
+    document.getElementById("cloudRosterCount").textContent =
+            visibleCount + " of " + totalCount + (totalCount == 1 ? " roster" : " rosters");
+    var emptyMessage = document.getElementById("cloudRosterNoResults");
+    emptyMessage.textContent = totalCount == 0
+            ? "No rosters were found for this army in your CreatorCloud account."
+            : "No rosters match your search.";
+    emptyMessage.hidden = visibleCount > 0;
+}
+
+function reloadCloudRosters() {
+    var username = document.getElementById("userInput").value.trim();
+    var password = document.getElementById("inputPassword").value;
+    getCloudRoster(username, password, document.getElementById("cloudRosterAllUsers").checked);
+}
+
+function setCloudRosterLoading(isLoading) {
+    document.getElementById("cloudRosterAllUsers").disabled = isLoading;
+    document.getElementById("cloudRosterSearch").disabled = isLoading;
+    document.getElementById("cloudRosterLoadSubmit").disabled = isLoading
+            || document.querySelector('input[name="flexCloudRoster"]:checked') == null;
+    document.getElementById("cloudRosterLoading").hidden = !isLoading;
+    if (isLoading) {
+        document.getElementById("cloudRosterSelectionText").replaceChildren();
+        document.getElementById("cloudRosterCount").textContent = "";
+        document.getElementById("cloudRosterNoResults").hidden = true;
+    }
+}
+
+function getCloudRoster(username, password, allUsers) {
     let urlRosterList = (cloudserver + "ac_list.php");
     var data = {
         username: username,
         password: password,
         army: armyname,
-        allusers: 0
+        allusers: allUsers ? 1 : 0
     }
+    var rosterDialogWasOpen = $('#cloudRosterSelection').hasClass('show');
+    setCloudRosterLoading(true);
 
     $.post(urlRosterList, data, function (result) {
-        if (result.indexOf("User credentials wrong!") == -1 && result.trim() != "") {
+        if (result.indexOf("User credentials wrong!") == -1) {
             var list = new Array();
             var fileList = decodeHTMLEntities(result).split("\n");
             for (var i = 0; i < fileList.length; i++) {
@@ -1070,17 +1205,41 @@ function getCloudRoster(username, password) {
                 }
             }
 
-            document.getElementById("cloudRosterSelectionTitle").innerHTML = "CreatorCloud Roster (" + armyname + ")";
-            document.getElementById("cloudRosterSelectionText").innerHTML = createRosterSelection(list);
-            $('#cloudRosterSelection').modal('show');
-        } else {
-            if (result == "") {
-                result = "User credentials wrong!";
+            document.getElementById("cloudRosterSelectionTitle").textContent = "Rosters for " + armyname;
+            document.getElementById("cloudRosterSelectionText").replaceChildren(createRosterSelection(list));
+            document.getElementById("cloudRosterSearch").value = "";
+            document.getElementById("cloudRosterLoadSubmit").disabled = true;
+            setCloudRosterLoading(false);
+            filterCloudRosters();
+            setCloudButtonLoading("cloudLoginSubmit", false,
+                    '<i class="bi bi-list-ul me-1" aria-hidden="true"></i>Show rosters', "");
+            if (!rosterDialogWasOpen) {
+                $('#cloudLogin').modal('hide');
+                $('#cloudRosterSelection').modal('show');
             }
-            showErrorTost("Error", "<b>CreatorCloud: " + result + "</b>");
+        } else {
+            setCloudRosterLoading(false);
+            setCloudButtonLoading("cloudLoginSubmit", false,
+                    '<i class="bi bi-list-ul me-1" aria-hidden="true"></i>Show rosters', "");
+            if (rosterDialogWasOpen) {
+                document.getElementById("cloudRosterNoResults").textContent =
+                        "CreatorCloud could not load rosters. Check your account and try again.";
+                document.getElementById("cloudRosterNoResults").hidden = false;
+            } else {
+                setCloudFeedback("cloudLoginFeedback", "CreatorCloud could not sign you in. Check your username and password and try again.");
+            }
         }
-
-
+    }).fail(function () {
+        setCloudRosterLoading(false);
+        setCloudButtonLoading("cloudLoginSubmit", false,
+                '<i class="bi bi-list-ul me-1" aria-hidden="true"></i>Show rosters', "");
+        if (rosterDialogWasOpen) {
+            document.getElementById("cloudRosterNoResults").textContent =
+                    "Could not connect to CreatorCloud. Check your connection and try again.";
+            document.getElementById("cloudRosterNoResults").hidden = false;
+        } else {
+            setCloudFeedback("cloudLoginFeedback", "Could not connect to CreatorCloud. Check your connection and try again.");
+        }
     });
 }
 
@@ -1388,10 +1547,20 @@ function getSetArmyName() {
     requestArmyInfo.open('GET', urlOptions);
     requestArmyInfo.responseType = 'text';
     requestArmyInfo.onload = function () {
-        var info = requestArmyInfo.response;
-        document.getElementById("armyinfo").innerHTML = info;
-        var n = info.indexOf(" (v");
-        armyname = info.substr(0, n);
+        var info = requestArmyInfo.response.trim();
+        var armyInfoElement = document.getElementById("armyinfo");
+        var versionIndex = info.indexOf(" (v");
+        armyname = versionIndex >= 0 ? info.substring(0, versionIndex) : info;
+        armyInfoElement.textContent = "";
+        if (versionIndex >= 0) {
+            armyInfoElement.appendChild(document.createTextNode(armyname));
+            var versionElement = document.createElement("span");
+            versionElement.className = "builder-army-version";
+            versionElement.textContent = info.substring(versionIndex);
+            armyInfoElement.appendChild(versionElement);
+        } else {
+            armyInfoElement.textContent = info;
+        }
         document.getElementById("rosterName").value = armyname;
         loadSession();
         getCategoriesFromAC();
@@ -1558,17 +1727,29 @@ function addActualUnitToRoster(status) {
     saveSession();
 }
 
-function createActionButton(title, biimage, action, specialAttributes, bgcolor) {
-    if (bgcolor == "" || bgcolor == null) {
-        bgcolor = "#f4b477";
-    }
-    var result = "<button type=\"button\" class=\"btn\" " + specialAttributes + " title=\"" + title + "\" style=\"background-color:" + bgcolor + ";\" onclick=\"" + action + "\"><i class=\"bi " + biimage + "\"></i></button>\n";
-
-    return result;
+function createActionButton(title, biimage, action, specialAttributes) {
+    var actionClass = title == "Delete" || title == "Detach unit"
+            ? "roster-action roster-action-danger"
+            : "roster-action";
+    return "<button type=\"button\" class=\"btn btn-sm " + actionClass + "\" "
+            + (specialAttributes || "") + " title=\"" + title + "\" aria-label=\"" + title
+            + "\" onclick=\"" + action + "\"><i class=\"bi " + biimage
+            + "\" aria-hidden=\"true\"></i><span>" + title + "</span></button>";
 }
 
 function createRosterTable() {
-    var tbl = "<table class=\"table myDivColor\"><thead><tr><th>Unitname</th><th>Option</th><th>#</th><th>Cost</th></tr></thead><tbody id='sortable1'>";
+    var unitCount = rosters.units.length;
+    var tbl = "<div class=\"roster-summary\"><i class=\"bi bi-collection\" aria-hidden=\"true\"></i> "
+            + unitCount + (unitCount == 1 ? " unit" : " units") + "</div>";
+
+    if (unitCount == 0) {
+        tbl += "<div class=\"roster-empty\"><i class=\"bi bi-inboxes\" aria-hidden=\"true\"></i>"
+                + "<strong>Your roster is empty</strong><span>Add units from the categories above to get started.</span></div>";
+        document.getElementById("rosterTable").innerHTML = tbl;
+        return;
+    }
+
+    tbl += "<div class=\"roster-unit-list\" id=\"sortable1\">";
 
     for (var i = 0; i < rosters.units.length; i++) {
         var options = rosters.units[i].options.split(";");
@@ -1576,7 +1757,7 @@ function createRosterTable() {
         for (var l = 0; l < options.length; l++) {
             if (options[l].trim() != "") {
                 var popover = '<a tabindex="0" class="bi bi-info-circle" role="button" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="focus" data-description-type="option" data-description-name="' + options[l] + '" title="' + removeCosts(options[l]) + '" data-bs-content="Loading..." id="' + rosters.units[i].uuid + '_' + options[l] + '"></a>';
-                printOptions += options[l] + " " + popover + "<br>";
+                printOptions += "<span class=\"roster-option-chip\">" + options[l] + " " + popover + "</span>";
             }
         }
 
@@ -1585,50 +1766,67 @@ function createRosterTable() {
 
         var buttonText = "";
         buttonText += createActionButton("Delete", "bi-trash-fill", "deleteUnitConfirmation('" + rosters.units[i].uuid + "');");
-        buttonText += "&nbsp;&nbsp;";
         buttonText += createActionButton("Edit", "bi-pencil-fill", "editUnit('" + rosters.units[i].uuid + "');");
         if (!isAttachment) {
-            buttonText += "&nbsp;&nbsp;" + createActionButton("Attach unit", "bi-folder-plus", "", "data-bs-toggle=\"modal\" data-bs-target=\"#addAttachment\" onclick=\"selectAttachment('" + rosters.units[i].uuid + "');\"", "#d9f58d");
+            buttonText += createActionButton("Attach unit", "bi-folder-plus", "", "data-bs-toggle=\"modal\" data-bs-target=\"#addAttachment\" onclick=\"selectAttachment('" + rosters.units[i].uuid + "');\"");
         }
         if (!hasAttachment && isAttachment) {
-            buttonText += "&nbsp;&nbsp;" + createActionButton("Detach unit", "bi-folder-minus", "removeAttachment('" + rosters.units[i].uuid + "');", "", "#fc928e");
+            buttonText += createActionButton("Detach unit", "bi-folder-minus", "removeAttachment('" + rosters.units[i].uuid + "');");
         }
 
         if (rosters.units[i].inactive == "X") {
-            buttonText += "&nbsp;&nbsp;" + createActionButton("Enable Unit", "bi-toggle-off", "enableUnit('" + rosters.units[i].uuid + "');", "", "#fc928e");
+            buttonText += createActionButton("Enable Unit", "bi-toggle-off", "enableUnit('" + rosters.units[i].uuid + "');");
         } else {
-            buttonText += "&nbsp;&nbsp;" + createActionButton("Disable Unit", "bi-toggle-on", "disableUnit('" + rosters.units[i].uuid + "');", "", "#d9f58d");
+            buttonText += createActionButton("Disable Unit", "bi-toggle-on", "disableUnit('" + rosters.units[i].uuid + "');");
         }
 
         var moveButtons = "";
         if (!isAttachment) {
-            moveButtons += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div style='float:left;'>";
-            moveButtons += createActionButton("Move up", "bi-box-arrow-up", "moveUnitUp('" + rosters.units[i].uuid + "');", "", "");
-            moveButtons += createActionButton("Move up", "bi-box-arrow-down", "moveUnitDown('" + rosters.units[i].uuid + "');", "", "");
-            moveButtons += "</div>";
+            moveButtons += createActionButton("Move up", "bi-box-arrow-up", "moveUnitUp('" + rosters.units[i].uuid + "');");
+            moveButtons += createActionButton("Move down", "bi-box-arrow-down", "moveUnitDown('" + rosters.units[i].uuid + "');");
         }
 
-
-        var attText = "";
+        var attachmentLabel = "";
         if (rosters.units[i].refuuid != "") {
-            attText = " (attached to <i>" + rosters.getUnit(rosters.units[i].refuuid).name + "</i>)";
+            var parentUnit = rosters.getUnit(rosters.units[i].refuuid);
+            attachmentLabel = "<span class=\"roster-attachment-label\"><i class=\"bi bi-paperclip\" aria-hidden=\"true\"></i> Attached to "
+                    + (parentUnit == null ? "unit" : parentUnit.name) + "</span>";
         }
 
-        if (rosters.units[i].inactive == "X") {
-            tbl += "<tr style=\"border-style:normal;text-decoration:line-through;opacity:0.5;\">\n";
-        } else {
-            tbl += "<tr style=\"border-style:normal;\">\n";
+        var unitClasses = "roster-unit-card";
+        if (isAttachment) {
+            unitClasses += " roster-unit-attachment";
         }
-        tbl += "<td>" + rosters.units[i].name + attText + " " + createUnitHeader(rosters.units[i].name, rosters.units[i].uuid + "_") + "</td>\n";
-        tbl += "<td>" + printOptions + "</td>\n";
-        tbl += "<td>" + rosters.units[i].size + "</td>\n";
-        tbl += "<td>" + rosters.units[i].cost + "</td>\n";
-        tbl += "</tr>\n";
-        tbl += "<tr class='nosort button' style=\"border-style:hidden; border-bottom: 1pt solid darkgray;\">\n";
-        tbl += "<td colspan=\"4\"><div style='float:left'>" + buttonText + "</div><div style='float:right'>" + moveButtons + "</div></td>\n";
-        tbl += "</tr>\n";
+        if (rosters.units[i].inactive == "X") {
+            unitClasses += " is-inactive";
+        }
+
+        tbl += "<article class=\"" + unitClasses + "\">";
+        tbl += "<div class=\"roster-unit-main\">";
+        tbl += "<div class=\"roster-unit-heading\"><h3 class=\"roster-unit-name\">"
+                + rosters.units[i].name + "</h3>"
+                + createUnitHeader(rosters.units[i].name, rosters.units[i].uuid + "_")
+                + attachmentLabel;
+        if (rosters.units[i].inactive == "X") {
+            tbl += "<span class=\"roster-status-badge\">Inactive</span>";
+        }
+        tbl += "</div>";
+        tbl += "<div class=\"roster-unit-stats\"><span><small>Size</small><strong>"
+                + rosters.units[i].size + "</strong></span><span><small>Cost</small><strong>"
+                + rosters.units[i].cost + "</strong></span></div>";
+        tbl += "</div>";
+        if (printOptions != "") {
+            tbl += "<div class=\"roster-unit-options\"><span class=\"roster-section-label\">Options</span>"
+                    + printOptions + "</div>";
+        }
+        tbl += "<div class=\"roster-unit-footer\"><div class=\"roster-unit-actions\">"
+                + buttonText + "</div>";
+        if (moveButtons != "") {
+            tbl += "<div class=\"roster-unit-order\" aria-label=\"Reorder unit\">" + moveButtons + "</div>";
+        }
+        tbl += "</div></article>";
     }
-    tbl += "</tbody></table>";
+    tbl += "</div>";
     document.getElementById("rosterTable").innerHTML = tbl;
     updateOptions();
 }
@@ -1649,7 +1847,7 @@ function updateOptions() {
 
 function deleteUnitConfirmation(uuid) {
     var unitname = rosters.getUnit(uuid).name;
-    confirm(deleteUnit, uuid, "Should unit '" + unitname + "' be deleted?");
+    confirm(deleteUnit, uuid, "Should unit '" + unitname + "' be deleted?", "Delete unit?");
 }
 
 function deleteUnit(uuid) {
@@ -1728,26 +1926,49 @@ function attachUnit(attachmentUUID, mainUUID) {
 
 
 function generateAttachmentOption(name, uuid) {
-    var result = '\
-		<div class="form-check">\
-		<input class="form-check-input" type="radio" name="flexRadioDefault" id="attach_' + name + '" uuid="' + uuid + '">\
-		<label class="form-check-label" for="attach_' + name + '">\
-			' + name + '\
-		</label>\
-		</div>\
-		';
+    var option = document.createElement("div");
+    option.className = "attach-unit-option";
 
-    return result;
+    var radio = document.createElement("input");
+    radio.className = "attach-unit-radio";
+    radio.type = "radio";
+    radio.name = "flexRadioDefault";
+    radio.id = "attach_" + uuid;
+    radio.setAttribute("uuid", uuid);
+    radio.addEventListener("change", function () {
+        document.querySelectorAll(".attach-unit-option").forEach(function (item) {
+            item.classList.toggle("is-selected", item.contains(radio));
+        });
+    });
+
+    var label = document.createElement("label");
+    label.className = "attach-unit-card";
+    label.htmlFor = radio.id;
+
+    var icon = document.createElement("span");
+    icon.className = "attach-unit-icon";
+    icon.innerHTML = '<i class="bi bi-person-plus" aria-hidden="true"></i>';
+
+    var title = document.createElement("span");
+    title.className = "attach-unit-name";
+    title.textContent = name;
+
+    label.appendChild(icon);
+    label.appendChild(title);
+    option.appendChild(radio);
+    option.appendChild(label);
+    option.dataset.search = name.toLocaleLowerCase();
+    return option;
 }
 
 
 function getAttachableUnits(mainUUID) {
-    var result = "";
+    var result = document.createDocumentFragment();
     for (var i = 0; i < rosters.units.length; i++) {
         if (rosters.units[i].uuid != mainUUID) {
             var attachmentArry = rosters.getAttatchedUnits(rosters.units[i].uuid);
             if (attachmentArry.length == 0 && rosters.units[i].refuuid == "") {
-                result += generateAttachmentOption(rosters.units[i].name, rosters.units[i].uuid);
+                result.appendChild(generateAttachmentOption(rosters.units[i].name, rosters.units[i].uuid));
             }
         }
 
@@ -1759,9 +1980,30 @@ function getAttachableUnits(mainUUID) {
 function selectAttachment(mainUUID) {
     var unitname = rosters.getUnit(mainUUID).name;
     var unitlist = getAttachableUnits(mainUUID);
-    document.getElementById("attachlist").innerHTML = unitlist;
-    document.getElementById("titleAttachment").innerHTML = "Attach to <b>" + unitname + "</b>";
+    document.getElementById("attachlist").replaceChildren(unitlist);
+    document.getElementById("attachUnitSearch").value = "";
+    document.getElementById("titleAttachment").textContent = "Attach to " + unitname;
     document.getElementById("addAttachment").setAttribute("uuid", mainUUID);
+    filterAttachmentUnits();
+}
+
+function filterAttachmentUnits() {
+    var search = document.getElementById("attachUnitSearch").value.trim().toLocaleLowerCase();
+    var options = document.querySelectorAll("#attachlist .attach-unit-option");
+    var visibleCount = 0;
+    options.forEach(function (option) {
+        var isVisible = option.dataset.search.indexOf(search) != -1;
+        option.hidden = !isVisible;
+        if (isVisible) {
+            visibleCount++;
+        }
+    });
+
+    var emptyMessage = document.getElementById("attachUnitEmpty");
+    emptyMessage.textContent = options.length == 0
+            ? "There are no unattached units available to attach."
+            : "No units match your search.";
+    emptyMessage.hidden = visibleCount > 0;
 }
 
 function saveAttachment() {
@@ -1824,7 +2066,7 @@ function createTextRoster() {
 }
 
 function clearRosterConfirmation() {
-    confirm(clearRoster, null, "Should roster be cleared?");
+    confirm(clearRoster, null, "Should roster be cleared?", "Clear roster?");
 }
 
 function clearRoster(noCalculate) {
@@ -1838,16 +2080,13 @@ function clearRoster(noCalculate) {
     saveSession();
 }
 
-function confirm(callback, param, text) {
-    document.getElementById('confirmText').innerHTML = text;
+function confirm(callback, param, text, title) {
+    document.getElementById('confirmDialogTitle').textContent = title || "Confirmation";
+    document.getElementById('confirmText').textContent = text;
     $("#confirmBox").modal('show');
 
-    $("#modal-btn-yes").on("click", function () {
+    $("#modal-btn-yes").off("click.confirm").on("click.confirm", function () {
         callback(param);
-        $("#confirmBox").modal('hide');
-    });
-
-    $("#modal-btn-no").on("click", function () {
         $("#confirmBox").modal('hide');
     });
 }
@@ -1917,22 +2156,15 @@ function uploadRostertoCloud() {
     let request = new XMLHttpRequest();
 
     var rstData = createRST();
-    var username = document.getElementById("userInputUpload").value;
+    var username = document.getElementById("userInputUpload").value.trim();
     var password = document.getElementById("inputPasswordUpload").value;
 
-    if (username != "undefined") {
-        localStorage.cloudUser = username;
-    }
-    if (password != "undefined") {
-        localStorage.cloudPwd = password;
-    }
-
-    var filename = document.getElementById("inputFilenamedUpload").value;
+    var filename = document.getElementById("inputFilenamedUpload").value.trim();
     if (filename.endsWith(".rst") == false) {
         filename += '.rst';
     }
 
-    var comment = document.getElementById("descriptionUpload").value;
+    var comment = document.getElementById("descriptionUpload").value.trim();
     var shareWithOthersUpload = document.getElementById("shareWithOthersUpload").checked;
     var notshared = "";
 
@@ -1942,27 +2174,59 @@ function uploadRostertoCloud() {
         notshared = '';
     }
 
-    if (rosters.units.length == 0 || rstData.length == 0 || username.length == 0 || password.length == 0 || filename.length == 0 || comment.length == 0) {
-        $('#cloudLoginUpload').modal('hide');
-        showErrorTost("Information", "<b>CreatorCloud Upload:</b> All fields must be filled in and units must be present in the roster.");
-    } else {
-        var formData = new FormData();
-        formData.append('username', username);
-        formData.append('password', password);
-        formData.append('comment', comment);
-        formData.append('notshared', notshared);
-        formData.append('file', new File([new Blob([rstData])], filename));
+    if (username.length == 0 || password.length == 0 || filename.length == 0 || comment.length == 0) {
+        setCloudFeedback("cloudUploadFeedback", "Complete the account and roster details before uploading.");
+        (username.length == 0 ? document.getElementById("userInputUpload")
+                : password.length == 0 ? document.getElementById("inputPasswordUpload")
+                : filename.length == 0 ? document.getElementById("inputFilenamedUpload")
+                : document.getElementById("descriptionUpload")).focus();
+        return;
+    }
 
-        request.open('POST', urlUploadRoster);
-        request.responseType = 'text';
-        request.onload = function () {
-            var result = request.response;
-            $('#cloudLoginUpload').modal('hide');
-            showErrorTost("Information", "<b>CreatorCloud Upload:</b> " + result);
+    if (rosters.units.length == 0 || rstData.length == 0) {
+        setCloudFeedback("cloudUploadFeedback", "Add at least one unit to the roster before uploading.");
+        return;
+    }
+
+    setCloudFeedback("cloudUploadFeedback", "");
+    setCloudButtonLoading("cloudUploadSubmit", true,
+            '<i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Upload roster', "Uploading...");
+    localStorage.cloudUser = username;
+    localStorage.cloudPwd = password;
+
+    var formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    formData.append('comment', comment);
+    formData.append('notshared', notshared);
+    formData.append('file', new File([new Blob([rstData])], filename));
+
+    request.open('POST', urlUploadRoster);
+    request.responseType = 'text';
+    request.timeout = 30000;
+    request.onload = function () {
+        setCloudButtonLoading("cloudUploadSubmit", false,
+                '<i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Upload roster', "");
+        if (request.status < 200 || request.status >= 300) {
+            setCloudFeedback("cloudUploadFeedback", "CreatorCloud could not upload this roster. Please try again.");
+            return;
         }
 
-        request.send(formData);
-    }
+        var result = request.response || "Upload completed.";
+        $('#cloudLoginUpload').modal('hide');
+        showErrorTost("Information", "<b>CreatorCloud Upload:</b> " + $("<div>").text(result).html());
+    };
+    request.onerror = function () {
+        setCloudButtonLoading("cloudUploadSubmit", false,
+                '<i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Upload roster', "");
+        setCloudFeedback("cloudUploadFeedback", "Could not connect to CreatorCloud. Check your connection and try again.");
+    };
+    request.ontimeout = function () {
+        setCloudButtonLoading("cloudUploadSubmit", false,
+                '<i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i>Upload roster', "");
+        setCloudFeedback("cloudUploadFeedback", "The upload took too long. Please try again.");
+    };
+    request.send(formData);
 }
 
 function getAvailableOptions(armyname, unitname, options, amount) {
