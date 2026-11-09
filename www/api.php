@@ -1,13 +1,18 @@
 <?php
 
-$url = "http://localhost:7070" . $_REQUEST["url"];
+$route = isset($_REQUEST["url"]) ? $_REQUEST["url"] : null;
+$method = getMethod();
 
-if(!$url) {
-  return;
+if (!isAllowedRoute($method, $route)) {
+  http_response_code(400);
+  header('Content-Type: text/plain; charset=UTF-8');
+  echo "Invalid API route";
+  exit;
 }
 
+$url = "http://localhost:7070" . $route;
 $response = "";
-switch (getMethod()) {
+switch ($method) {
   case 'POST':
     $response = makePostRequest(getPostData(), $url);
     break;
@@ -22,6 +27,51 @@ echo $response;
 
 function getMethod() {
   return $_SERVER["REQUEST_METHOD"]; 
+}
+
+function isAllowedRoute($method, $route) {
+  if (!is_string($route) || $route === "" || $route[0] !== "/"
+      || substr($route, 0, 2) === "//"
+      || strpos($route, "\\") !== false
+      || strpos($route, "@") !== false
+      || strpos($route, ":") !== false
+      || preg_match('/[\x00-\x1F\x7F?#]/', $route)) {
+    return false;
+  }
+
+  if ($method === "POST") {
+    return in_array($route, array(
+      "/checkroster",
+      "/livecheck",
+      "/availableoptions",
+      "/statistics",
+      "/unitcost/",
+      "/createhtml",
+      "/createpdf"
+    ), true);
+  }
+
+  if ($method !== "GET") {
+    return false;
+  }
+
+  if ($route === "/armylist") {
+    return true;
+  }
+
+  if (preg_match('/^\/(?:categorylist|armyinfo|allunitsdescriptions|alloptiondescriptions|armyicon)\/[^\/]+$/uD', $route)) {
+    return true;
+  }
+
+  if (preg_match('/^\/(?:unitlist|unitsize|optionlist|unitdescription)\/[^\/]+\/[^\/]+$/uD', $route)) {
+    return true;
+  }
+
+  if (preg_match('/^\/(?:optiondescription|html|pdf|text|bbcode)\/.+$/uD', $route)) {
+    return true;
+  }
+
+  return false;
 }
 
 function getPostData() {
@@ -66,6 +116,7 @@ function initCurl($url) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, str_replace(" ", "%20", $url));
   curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+  curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP);
 
   return $ch;
 }
